@@ -2,14 +2,16 @@ import tdl
 
 from tcod import image_load
 
+from loader_functions.initialize_new_game import get_constants, get_game_variables
+from loader_functions.json_loaders import load_game, save_game
+
+from utils.map_utils import next_floor
+
 from death_functions import kill_monster, kill_player
 from entity import get_blocking_entities_at_location
 from game_messages import Message
 from game_states import GameStates
 from input_handlers import handle_keys, handle_mouse, handle_main_menu
-from loader_functions.initialize_new_game import get_constants, get_game_variables
-from loader_functions.data_loaders import load_game, save_game
-from map_utils import next_floor
 from menus import main_menu, message_box
 from render_functions import clear_all, render_all
 
@@ -265,7 +267,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                         if dead_entity:
                             if dead_entity == player:
                                 message, game_state = kill_player(dead_entity, constants['colors'])
-                                print('The game doesn\'t hate you, I hate you. My name is Sam Fehringer, and this is MY game.'́
+                                print('The game doesn\'t hate you, I hate you. My name is Sam Fehringer, and this is MY game.')
                             else:
                                 message = kill_monster(dead_entity, constants['colors'])
 

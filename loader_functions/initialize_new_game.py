@@ -4,16 +4,12 @@ from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
 
+from utils.map_utils import GameMap, make_map
+
 from entity import Entity
-
 from equipment_slots import EquipmentSlots
-
 from game_messages import MessageLog
-
 from game_states import GameStates
-
-from map_utils import GameMap, make_map
-
 from render_functions import RenderOrder
 
 

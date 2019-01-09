@@ -9,14 +9,11 @@ from components.fighter import Fighter
 from components.item import Item
 from components.stairs import Stairs
 
+from utils.random_utils import from_dungeon_level, random_choice_from_dict
+
 from entity import Entity
-
 from game_messages import Message
-
 from item_functions import cast_confuse, cast_fireball, cast_lightning, heal
-
-from random_utils import from_dungeon_level, random_choice_from_dict
-
 from render_functions import RenderOrder
 
 
@@ -26,6 +23,59 @@ class GameMap(Map):
         self.explored = [[False for y in range(height)] for x in range(width)]
 
         self.dungeon_level = dungeon_level
+
+    def to_json(self):
+        walkable = []
+        transparent = []
+
+        for y in range(self.height):
+            walkable_row = []
+            transparent_row = []
+
+            for x in range(self.width):
+                if self.walkable[x, y]:
+                    walkable_value = True
+                else:
+                    walkable_value = False
+
+                if self.transparent[x, y]:
+                    transparent_value = True
+                else:
+                    transparent_value = False
+
+                walkable_row.append(walkable_value)
+                transparent_row.append(transparent_value)
+
+            walkable.append(walkable_row)
+            transparent.append(transparent_row)
+
+        json_data = {
+            'width': self.width,
+            'height': self.height,
+            'explored': self.explored,
+            'walkable': walkable,
+            'transparent': transparent
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        width = json_data.get('width')
+        height = json_data.get('height')
+        explored = json_data.get('explored')
+        walkable = json_data.get('walkable')
+        transparent = json_data.get('transparent')
+
+        game_map = GameMap(width, height)
+        game_map.explored = explored
+
+        for y in range(height):
+            for x in range(width):
+                game_map.walkable[x, y] = walkable[y][x]
+                game_map.transparent[x, y] = transparent[y][x]
+
+        return game_map
 
 
 class Rect:

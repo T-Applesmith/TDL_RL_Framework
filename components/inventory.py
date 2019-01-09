@@ -6,6 +6,28 @@ class Inventory:
         self.capacity = capacity
         self.items = []
 
+    def to_json(self):
+        json_data = {
+            'capacity': self.capacity,
+            'items': [item.to_json() for item in self.items]
+        }
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        from entity import Entity
+
+        capacity = json_data.get('capacity')
+        items_json = json_data.get('items')
+
+        items = [Entity.from_json(item_json) for item_json in items_json]
+
+        inventory = Inventory(capacity)
+        inventory.items = items
+
+        return inventory
+
     def add_item(self, item, colors):
         results = []
 
