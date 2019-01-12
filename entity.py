@@ -118,6 +118,7 @@ class Entity:
         item_json = json_data.get('item')
         inventory_json = json_data.get('inventory')
         level_json = json_data.get('level')
+        print('name: '+str(name)+'   level_json initialize: ' +str(level_json))
 
         entity = Entity(x, y, char, color, name, blocks, render_order)
 
@@ -148,9 +149,14 @@ class Entity:
             entity.inventory.owner = entity
 
         if level_json:
-            print(str(level_json))
+            print('name: ' + str(name))
+            print('entity>str(level_json): '+str(level_json))
             entity.level = Level.from_json(level_json)
+            #print('entity>Level.from_json(level_json): ' + str(Level.from_json(level_json)))
+            print('entity>str(entity.level): '+str(entity.level))
+            print('entity>str(entity): '+str(entity.__dict__))
             #entity.level.owner = entity
+            
 
         return entity
 

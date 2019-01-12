@@ -2,6 +2,9 @@ import os
 
 import shelve
 
+#===========================================#
+# Depreciated - Replaced by json_loaders.py #
+#===========================================#
 
 def save_game(player, entities, game_map, message_log, game_state):
     with shelve.open('savegame.dat', 'n') as data_file:
