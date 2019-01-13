@@ -64,12 +64,20 @@ class Entity:
                 self.item.owner = self
 
     #@classmethod
-    def entity_init_from_dict(dictonary):
-        entity = Entity(0, 0, '@', (255,255,255), 'If you can see this, entity_init_from_dict broke')
+    def entity_init_from_dict(dictionary):
+        print('dictionary: '+str(dictionary))
+        x = dictionary.get('x')
+        y = dictionary.get('y')
+        char = dictionary.get('char')
+        color = dictionary.get('color')
+        name = dictionary.get('name')
+        #entity = Entity(dictonary.get('x'), dictonary.get('y'), '@', (255,255,255), 'If you can see this, entity_init_from_dict broke')
+        entity = Entity(x, y, char, color, name)
 
-        for key, value in dictonary:
+        for key, value in dictionary.items():
             entity.key = value
 
+        print('ENTITY_INIT_FROM_DICT: '+str(entity.__dict__))
         return entity
 
     def to_json(self):

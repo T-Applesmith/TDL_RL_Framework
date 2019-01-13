@@ -30,7 +30,7 @@ class Equipment:
         print(str(json_data.get('main_hand')))
         main_hand = json_data.get('main_hand')
         if main_hand:
-            main_hand = main_hand.items()
+            #main_hand = main_hand.items()
             print('main_hand: '+str(main_hand))
             main_hand_entity = Entity.entity_init_from_dict(main_hand)
             print('main_hand_entity: '+str(main_hand_entity))
