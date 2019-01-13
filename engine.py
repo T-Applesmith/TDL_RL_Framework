@@ -169,14 +169,14 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
             else:
-                print('/nBeginning save...')
+                print('\nBeginning save...')
                 print('player: '+str(player))
                 print('entities: '+str(entities))
                 print('game map: '+str(game_map))
                 print('message log: '+str(message_log))
                 print('game_state: '+str(game_state))
                 save_game(player, entities, game_map, message_log, game_state)
-                print('Save complete!')
+                print('==============\nSave complete!\n==============\n')
 
                 return True
 

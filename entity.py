@@ -111,6 +111,7 @@ class Entity:
             equipment_data = None
 
         if self.equippable:
+            print('entity>equippable: '+str(self.name)+': '+str(self.equippable))
             equippable_data = self.equippable.to_json()
         else:
             equippable_data = None
@@ -130,7 +131,7 @@ class Entity:
             'stairs': stairs_data,
             'level': level_data,
             'equipment': equipment_data,
-            'equippable_data': equippable_data
+            'equippable': equippable_data
         }
 
         return json_data
@@ -195,6 +196,7 @@ class Entity:
 
         if equippable_json:
             entity.equippable = Equippable.from_json(equippable_json)
+            print('equippable.from_json: ' + str(entity.equippable))
             entity.equippable.owner = entity
 
         return entity

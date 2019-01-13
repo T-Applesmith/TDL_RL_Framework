@@ -9,11 +9,13 @@ class Equipment:
     def to_json(self):
         print('Saving equipment')
         print('main_hand: '+str(self.main_hand)+'\noff_hand: '+str(self.off_hand))
-        json_data = {
-            # these are entities
-            'main_hand': self.main_hand.to_json(),
-            'off_hand': self.off_hand.to_json()
-        }
+        json_data = {}
+        # these are entities
+        if self.main_hand:
+            json_data['main_hand'] = self.main_hand.to_json()
+        if self.off_hand:
+            json_data['off_hand'] = self.off_hand.to_json()
+        
         print('Equipment: '+str(json_data))
         print('Equipment save successful')
 
