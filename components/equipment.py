@@ -6,6 +6,45 @@ class Equipment:
         self.main_hand = main_hand
         self.off_hand = off_hand
 
+    def to_json(self):
+        print('Saving equipment')
+        print('main_hand: '+str(self.main_hand)+'\noff_hand: '+str(self.off_hand))
+        json_data = {
+            # these are entities
+            'main_hand': self.main_hand.to_json(),
+            'off_hand': self.off_hand.to_json()
+        }
+        print('Equipment: '+str(json_data))
+        print('Equipment save successful')
+
+        return json_data
+
+    @staticmethod
+    def from_json(json_data):
+        from entity import Entity
+        main_hand_entity = None
+        off_hand_entity = None
+        
+        print(str(json_data.get('main_hand')))
+        main_hand = json_data.get('main_hand')
+        if main_hand:
+            main_hand = main_hand.items()
+            print('main_hand: '+str(main_hand))
+            main_hand_entity = Entity.entity_init_from_dict(main_hand)
+            print('main_hand_entity: '+str(main_hand_entity))
+            
+        off_hand = json_data.get('off_hand')
+        if off_hand:
+            off_hand = off_hand.items()
+            off_hand_entity = Entity.entity_init_from_dict(off_hand)
+        
+        print('main_hand: '+str(main_hand))
+
+        equipment = Equipment(main_hand_entity, off_hand_entity)
+
+        return equipment
+
+
     @property
     def max_hp_bonus(self):
         bonus = 0

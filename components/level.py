@@ -32,16 +32,12 @@ class Level:
 
     @staticmethod
     def from_json(json_data):
-        print('level>json_data: ' + str(json_data))
         level_json = json_data.get('level')
-        print('level>level_json: ' + str(level_json))
         current_level = json_data.get('current_level')
         current_xp = json_data.get('current_xp')
         level_up_base = json_data.get('level_up_base')
         level_up_factor = json_data.get('level_up_factor')
-        print('level>current_level: '+str(current_level)+'\nlevel>current_xp: '+str(current_xp))
 
         level = Level(current_level, current_xp, level_up_base, level_up_factor)
-        print('exit_level: ' + str(level.__dict__))
         
         return level

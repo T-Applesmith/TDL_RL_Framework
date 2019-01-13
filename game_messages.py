@@ -7,6 +7,7 @@ class Message:
         self.color = color
 
     def to_json(self):
+        print('Saving: Game Messages')
         json_data = {
             'text': self.text,
             'color': self.color

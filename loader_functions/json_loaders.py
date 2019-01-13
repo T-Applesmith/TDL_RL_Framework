@@ -16,11 +16,15 @@ def save_game(player, entities, game_map, message_log, game_state):
         'game_state': game_state.value
     }
 
+    print('Saving to JSON')
+    print('data: '+str(data))
     with open('save_game.json', 'w') as save_file:
         json.dump(data, save_file, indent=4)
+    print('Saved to JSON')
 
 
 def load_game():
+    print('Loading from JSON')
     with open('save_game.json') as save_file:
         data = json.load(save_file)
 
@@ -36,4 +40,5 @@ def load_game():
     message_log = MessageLog.from_json(message_log_json)
     game_state = GameStates(game_state_json)
 
+    print('Loading from JSON complete')
     return player, entities, game_map, message_log, game_state

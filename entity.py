@@ -1,10 +1,13 @@
 import math
 
 from components.ai import BasicMonster, ConfusedMonster
+from components.equipment import Equipment
+from components.equippable import Equippable
 from components.fighter import Fighter
 from components.item import Item
 from components.inventory import Inventory
 from components.level import Level
+from components.stairs import Stairs
 
 from render_functions import RenderOrder
 
@@ -60,7 +63,17 @@ class Entity:
                 self.item = item
                 self.item.owner = self
 
+    #@classmethod
+    def entity_init_from_dict(dictonary):
+        entity = Entity(0, 0, '@', (255,255,255), 'If you can see this, entity_init_from_dict broke')
+
+        for key, value in dictonary:
+            entity.key = value
+
+        return entity
+
     def to_json(self):
+        print('saving entity: '+str(self.name))
         if self.fighter:
             fighter_data = self.fighter.to_json()
         else:
@@ -81,11 +94,26 @@ class Entity:
         else:
             inventory_data = None
 
+        if self.stairs:
+            stairs_data = self.stairs.to_json()
+        else:
+            stairs_data = None
+
         if self.level:
-            level_data = self.level.to_json()
-            print(str(level_data))            
+            level_data = self.level.to_json()          
         else:
             level_data = None
+
+        if self.equipment:
+            print('equipment: '+str(self.equipment.__dict__))
+            equipment_data = self.equipment.to_json()
+        else:
+            equipment_data = None
+
+        if self.equippable:
+            equippable_data = self.equippable.to_json()
+        else:
+            equippable_data = None
 
         json_data = {
             'x': self.x,
@@ -99,7 +127,10 @@ class Entity:
             'ai': ai_data,
             'item': item_data,
             'inventory': inventory_data,
-            'level': level_data
+            'stairs': stairs_data,
+            'level': level_data,
+            'equipment': equipment_data,
+            'equippable_data': equippable_data
         }
 
         return json_data
@@ -117,8 +148,10 @@ class Entity:
         ai_json = json_data.get('ai')
         item_json = json_data.get('item')
         inventory_json = json_data.get('inventory')
+        stairs_json = json_data.get('stairs')
         level_json = json_data.get('level')
-        print('name: '+str(name)+'   level_json initialize: ' +str(level_json))
+        equipment_json = json_data.get('equipment')
+        equippable_json = json_data.get('equippable')
 
         entity = Entity(x, y, char, color, name, blocks, render_order)
 
@@ -149,14 +182,20 @@ class Entity:
             entity.inventory.owner = entity
 
         if level_json:
-            print('name: ' + str(name))
-            print('entity>str(level_json): '+str(level_json))
             entity.level = Level.from_json(level_json)
-            #print('entity>Level.from_json(level_json): ' + str(Level.from_json(level_json)))
-            print('entity>str(entity.level): '+str(entity.level))
-            print('entity>str(entity): '+str(entity.__dict__))
-            #entity.level.owner = entity
-            
+            entity.level.owner = entity
+
+        if stairs_json:
+            entity.stairs = Stairs.from_json(stairs_json)
+            entity.stairs.owner = entity
+
+        if equipment_json:
+            entity.equipment = Equipment.from_json(equipment_json)
+            entity.equipment.owner = entity
+
+        if equippable_json:
+            entity.equippable = Equippable.from_json(equippable_json)
+            entity.equippable.owner = entity
 
         return entity
 

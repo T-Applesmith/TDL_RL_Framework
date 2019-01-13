@@ -25,6 +25,7 @@ class GameMap(Map):
         self.dungeon_level = dungeon_level
 
     def to_json(self):
+        print('saving game map')
         walkable = []
         transparent = []
 
