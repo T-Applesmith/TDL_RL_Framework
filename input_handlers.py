@@ -15,6 +15,8 @@ def handle_keys(user_input, game_state):
             return handle_level_up_menu(user_input)
         elif game_state == GameStates.CHARACTER_SCREEN:
             return handle_character_screen(user_input)
+        elif game_state == GameStates.EQUIPMENT_SCREEN:
+            return handle_equipment_screen(user_input)
 
     return {}
 
@@ -56,6 +58,9 @@ def handle_player_turn_keys(user_input):
 
     elif key_char == 'c':
         return {'show_character_screen': True}
+
+    elif key_char == 'e':
+        return {'show_equipment_screen': True}
 
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen
@@ -140,6 +145,13 @@ def handle_level_up_menu(user_input):
 
 
 def handle_character_screen(user_input):
+    if user_input.key == 'ESCAPE':
+        return {'exit': True}
+
+    return {}
+
+
+def handle_equipment_screen(user_input):
     if user_input.key == 'ESCAPE':
         return {'exit': True}
 

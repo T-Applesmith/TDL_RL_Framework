@@ -27,7 +27,7 @@ class Equipment:
         main_hand_entity = None
         off_hand_entity = None
         
-        print(str(json_data.get('main_hand')))
+        print('main_hand: '+str(json_data.get('main_hand')))
         main_hand = json_data.get('main_hand')
         if main_hand:
             #main_hand = main_hand.items()

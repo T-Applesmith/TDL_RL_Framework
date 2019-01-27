@@ -51,6 +51,24 @@ def inventory_menu(con, root, header, player, inventory_width, screen_width, scr
     menu(con, root, header, options, inventory_width, screen_width, screen_height)
 
 
+def equipment_menu(con, root, header, player, equipment_width, screen_width, screen_height):
+    # show a menu with currently equipped items
+    options = []
+    
+    if player.equipment.main_hand:
+        options.append('main hand: {0}'.format(player.equipment.main_hand.name))
+    else:
+        options.append('main hand: (empty)')
+
+    if player.equipment.off_hand:
+            options.append('off hand: {0}'.format(player.equipment.off_hand.name))
+    else:
+        options.append('off hand: (empty)')
+
+    menu(con, root, header, options, equipment_width, screen_width, screen_height)
+            
+
+
 def main_menu(con, root_console, background_image, screen_width, screen_height, colors):
     background_image.blit_2x(root_console, 0, 0)
 
@@ -58,7 +76,7 @@ def main_menu(con, root_console, background_image, screen_width, screen_height, 
     center = (screen_width - len(title)) // 2
     root_console.draw_str(center, screen_height // 2 - 4, title, bg=None, fg=colors.get('light_yellow'))
 
-    title = 'By (Your name here)'
+    title = 'By TApplesmith'
     center = (screen_width - len(title)) // 2
     root_console.draw_str(center, screen_height - 2, title, bg=None, fg=colors.get('light_yellow'))
 

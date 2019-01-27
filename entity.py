@@ -204,7 +204,7 @@ class Entity:
 
         if equippable_json:
             entity.equippable = Equippable.from_json(equippable_json)
-            print('equippable.from_json: ' + str(entity.equippable))
+            print('equippable.from_json: ' + str(entity))
             entity.equippable.owner = entity
 
         return entity

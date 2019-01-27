@@ -2,7 +2,7 @@ from enum import Enum
 
 from game_states import GameStates
 
-from menus import character_screen, inventory_menu, level_up_menu
+from menus import character_screen, inventory_menu, level_up_menu, equipment_menu
 
 
 class RenderOrder(Enum):
@@ -100,6 +100,9 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
     elif game_state == GameStates.CHARACTER_SCREEN:
         character_screen(root_console, player, 30, 10, screen_width, screen_height)
+
+    elif game_state == GameStates.EQUIPMENT_SCREEN:
+        equipment_menu(con, root_console, 'Equipment', player, 30, screen_width, screen_height)
 
 
 def clear_all(con, entities):
