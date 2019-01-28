@@ -69,10 +69,10 @@ class Fighter:
 
     def to_json(self):
         json_data = {
-            'max_hp': self.max_hp,
+            'max_hp': self.base_max_hp,
             'hp': self.hp,
-            'defense': self.defense,
-            'power': self.power
+            'defense': self.base_defense,
+            'power': self.base_power
         }
 
         return json_data

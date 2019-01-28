@@ -15,8 +15,13 @@ class Equipment:
             json_data['main_hand'] = self.main_hand.to_json()
         if self.off_hand:
             json_data['off_hand'] = self.off_hand.to_json()
+
+        #json_data = {
+        #    'main_hand': self.main_hand.to_json(),
+        #    'off_hand': self.main_hand.to_json()
+        #}
         
-        print('Equipment: '+str(json_data))
+        print('Equipment: {0}'.format(json_data))
         print('Equipment save successful')
 
         return json_data
@@ -43,6 +48,7 @@ class Equipment:
         print('main_hand: '+str(main_hand))
 
         equipment = Equipment(main_hand_entity, off_hand_entity)
+        print('EQUIPMENT: {0}'.format(equipment))
 
         return equipment
 

@@ -1,6 +1,8 @@
 import tdl
+#https://python-tcod.readthedocs.io/en/latest/tdl.html
 
-from tcod import image_load
+from tcod import image_load, console
+#https://python-tcod.readthedocs.io/en/latest/tcod.html
 
 from loader_functions.initialize_new_game import get_constants, get_game_variables
 from loader_functions.json_loaders import load_game, save_game
@@ -159,9 +161,9 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             previous_game_state = game_state
             game_state = GameStates.EQUIPMENT_SCREEN
 
-        if equipment_index is not None:
+        if equipment_index is not None and previous_game_state != GameStates.PLAYER_DEAD:
             #from equipment_slots import EquipmentSlots
-            #and previous_game_state != GameStates.PLAYER_DEAD: #and equipment_index < len(player.inventory.items):
+            #: #and equipment_index < len(player.inventory.items):
             #equipment_selected = player.inventory.items[inventory_index]
             #print('equipmentslots: {0}'.format(equipment_index))
             #print('EquipmentSlots[equipment_index]: {0}'.format(EquipmentSlots(equipment_index)))
@@ -170,6 +172,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 equipment_selected = player.equipment.main_hand
             elif equipment_index == 1:
                 equipment_selected = player.equipment.off_hand
+            else:
+                equipment_selected = None
 
             if game_state == GameStates.EQUIPMENT_SCREEN and equipment_selected is not None:
                 player.inventory.add_item(equipment_selected, constants['colors'])
@@ -331,6 +335,8 @@ def main():
     show_load_error_message = False
 
     main_menu_background_image = image_load('menu_background.png')
+
+    tdl.set_fps(60) #Let's not be google chrome
 
     while not tdl.event.is_window_closed():
         for event in tdl.event.get():

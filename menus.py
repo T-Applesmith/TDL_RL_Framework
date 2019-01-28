@@ -41,12 +41,20 @@ def inventory_menu(con, root, header, player, inventory_width, screen_width, scr
         options = []
 
         for item in player.inventory.items:
-            if player.equipment.main_hand == item:
-                options.append('{0} (on main hand)'.format(item.name))
-            elif player.equipment.off_hand == item:
-                options.append('{0} (on off hand)'.format(item.name))
-            else:
-                options.append(item.name)
+            #Mostly vestigal, going to keep to the next clean-up
+            if player.equipment:
+                if player.equipment.main_hand:
+                    if player.equipment.main_hand == item:
+                        options.append('{0} (on main hand)'.format(item.name))
+                    else:
+                        options.append('{0} (BUG: attempted to be on main hand)'.format(item.name))
+                elif player.equipment.off_hand:
+                    if player.equipment.off_hand == item:
+                        options.append('{0} (on off hand)'.format(item.name))
+                    else:
+                        options.append('{0} (BUG: attempted to be on off hand)'.format(item.name))
+                else:
+                    options.append(item.name)
 
     menu(con, root, header, options, inventory_width, screen_width, screen_height)
 
@@ -54,16 +62,17 @@ def inventory_menu(con, root, header, player, inventory_width, screen_width, scr
 def equipment_menu(con, root, header, player, equipment_width, screen_width, screen_height):
     # show a menu with currently equipped items
     options = []
-    
-    if player.equipment.main_hand:
-        options.append('main hand: {0}'.format(player.equipment.main_hand.name))
-    else:
-        options.append('main hand: (empty)')
 
-    if player.equipment.off_hand:
-            options.append('off hand: {0}'.format(player.equipment.off_hand.name))
-    else:
-        options.append('off hand: (empty)')
+    if player.equipment:
+        if player.equipment.main_hand:
+            options.append('main hand: {0}'.format(player.equipment.main_hand.name))
+        else:
+            options.append('main hand: (empty)')
+
+        if player.equipment.off_hand:
+                options.append('off hand: {0}'.format(player.equipment.off_hand.name))
+        else:
+            options.append('off hand: (empty)')
 
     menu(con, root, header, options, equipment_width, screen_width, screen_height)
             

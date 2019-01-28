@@ -85,6 +85,8 @@ def handle_player_dead_keys(user_input):
 
     if key_char == 'i':
         return {'show_inventory': True}
+    if key_char == 'e':
+        return {'show_equipment': True}
 
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen

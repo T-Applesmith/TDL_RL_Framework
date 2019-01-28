@@ -10,15 +10,15 @@ class Equippable:
     def to_json(self):
         print('Beginning save of equippable')
         slot_data = self.slot.value
-        print('slot_data: '+str(self.slot.__dict__))
+        print('slot_data: {0}'.format(slot_data))
         
         json_data = {
-            #'slot': slot_data._value_,
             'slot': slot_data, 
             'power_bonus': self.power_bonus,
             'defense_bonus': self.defense_bonus,
             'max_hp_bonus': self.max_hp_bonus
         }
+        print('equippable: {0}'.format(json_data))
         print('Save of equippable complete')
 
         return json_data
@@ -33,5 +33,6 @@ class Equippable:
         max_hp_bonus = json_data.get('max_hp_bonus')
 
         equippable = Equippable(slot, power_bonus, defense_bonus, max_hp_bonus)
+        print('equippable: {0}\n\t{1}'.format(equippable,equippable.__dict__))
 
         return equippable
