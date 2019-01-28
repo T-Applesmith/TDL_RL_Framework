@@ -71,6 +71,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         level_up = action.get('level_up')
         show_character_screen = action.get('show_character_screen')
         show_equipment_screen = action.get('show_equipment_screen')
+        equipment_index = action.get('equipment_index')
         exit = action.get('exit')
         fullscreen = action.get('fullscreen')
 
@@ -158,6 +159,22 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             previous_game_state = game_state
             game_state = GameStates.EQUIPMENT_SCREEN
 
+        if equipment_index is not None:
+            #from equipment_slots import EquipmentSlots
+            #and previous_game_state != GameStates.PLAYER_DEAD: #and equipment_index < len(player.inventory.items):
+            #equipment_selected = player.inventory.items[inventory_index]
+            #print('equipmentslots: {0}'.format(equipment_index))
+            #print('EquipmentSlots[equipment_index]: {0}'.format(EquipmentSlots(equipment_index)))
+            #print('equipment: {0}'.format(player.equipment))
+            if equipment_index == 0:
+                equipment_selected = player.equipment.main_hand
+            elif equipment_index == 1:
+                equipment_selected = player.equipment.off_hand
+
+            if game_state == GameStates.EQUIPMENT_SCREEN and equipment_selected is not None:
+                player.inventory.add_item(equipment_selected, constants['colors'])
+                player_turn_results.extend(player.equipment.toggle_equip(equipment_selected))
+
         if game_state == GameStates.TARGETING:
             if left_click:
                 target_x, target_y = left_click
@@ -232,9 +249,11 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                     dequipped = equip_result.get('dequipped')
 
                     if equipped:
+                        player.inventory.remove_item(equipped)
                         message_log.add_message(Message('You equipped the {0}'.format(equipped.name)))
 
                     if dequipped:
+                        player.inventory.add_item(dequipped, constants['colors'])
                         message_log.add_message(Message('You dequipped the {0}'.format(dequipped.name)))
 
                 game_state = GameStates.ENEMY_TURN
@@ -279,7 +298,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                         if dead_entity:
                             if dead_entity == player:
                                 message, game_state = kill_player(dead_entity, constants['colors'])
-                                print('The game doesn\'t hate you, I hate you. My name is Sam Fehringer, and this is MY game.')
+                                print('The game doesn\'t hate you, I hate you. My name is Tiberius Applesmith, and this is MY game.')
                             else:
                                 message = kill_monster(dead_entity, constants['colors'])
 

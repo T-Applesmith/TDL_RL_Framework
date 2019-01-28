@@ -152,7 +152,19 @@ def handle_character_screen(user_input):
 
 
 def handle_equipment_screen(user_input):
-    if user_input.key == 'ESCAPE':
+    if not user_input.char:
+        return {}
+
+    index = ord(user_input.char) - ord('a')
+
+    if index >= 0:
+        return {'equipment_index': index}
+
+    if user_input.key == 'ENTER' and user_input.alt:
+        # Alt+Enter: toggle full screen
+        return {'fullscreen': True}
+    elif user_input.key == 'ESCAPE':
+        # Exit the game
         return {'exit': True}
 
     return {}

@@ -27,18 +27,18 @@ class Equipment:
         main_hand_entity = None
         off_hand_entity = None
         
-        print('main_hand: '+str(json_data.get('main_hand')))
+        #print('main_hand: '+str(json_data.get('main_hand')))
         main_hand = json_data.get('main_hand')
         if main_hand:
             #main_hand = main_hand.items()
             print('main_hand: '+str(main_hand))
-            main_hand_entity = Entity.entity_init_from_dict(main_hand)
+            main_hand_entity = Entity.from_json(main_hand)
             print('main_hand_entity: '+str(main_hand_entity))
             
         off_hand = json_data.get('off_hand')
         if off_hand:
             off_hand = off_hand.items()
-            off_hand_entity = Entity.entity_init_from_dict(off_hand)
+            off_hand_entity = Entity.from_json(off_hand)
         
         print('main_hand: '+str(main_hand))
 
@@ -86,6 +86,7 @@ class Equipment:
     def toggle_equip(self, equippable_entity):
         results = []
 
+        print('toggle_equip>equippable_entity: {0}\n\t{1}'.format(equippable_entity, equippable_entity.to_json()))
         slot = equippable_entity.equippable.slot
 
         if slot == EquipmentSlots.MAIN_HAND:
@@ -96,8 +97,10 @@ class Equipment:
                 if self.main_hand:
                     results.append({'dequipped': self.main_hand})
 
+                print('self.main_hand: {0}'.format(self.main_hand))
                 self.main_hand = equippable_entity
                 results.append({'equipped': equippable_entity})
+                
         elif slot == EquipmentSlots.OFF_HAND:
             if self.off_hand == equippable_entity:
                 self.off_hand = None
