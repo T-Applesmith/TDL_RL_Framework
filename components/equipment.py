@@ -13,8 +13,13 @@ class Equipment:
         # these are entities
         if self.main_hand:
             json_data['main_hand'] = self.main_hand.to_json()
+        else:
+            json_data['main_hand'] = None
+            
         if self.off_hand:
             json_data['off_hand'] = self.off_hand.to_json()
+        else:
+            json_data['off_hand'] = None
 
         #json_data = {
         #    'main_hand': self.main_hand.to_json(),
@@ -49,6 +54,8 @@ class Equipment:
 
         equipment = Equipment(main_hand_entity, off_hand_entity)
         print('EQUIPMENT: {0}'.format(equipment))
+        if equipment == None:
+            equipment = {}
 
         return equipment
 

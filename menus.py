@@ -55,7 +55,11 @@ def inventory_menu(con, root, header, player, inventory_width, screen_width, scr
                         options.append('{0} (BUG: attempted to be on off hand)'.format(item.name))
                 else:
                     options.append(item.name)
-
+            else:
+                #print(']nREPORT\nplayer.equipment: {0}'.format(player.equipment))
+                #print('FATAL BUG: inventory_menu, no player.equipment found')
+                pass
+                                
     menu(con, root, header, options, inventory_width, screen_width, screen_height)
 
 
@@ -73,7 +77,11 @@ def equipment_menu(con, root, header, player, equipment_width, screen_width, scr
                 options.append('off hand: {0}'.format(player.equipment.off_hand.name))
         else:
             options.append('off hand: (empty)')
-
+    else:
+        #print('\nREPORT\nplayer.equipment: {0}'.format(player.equipment))
+        #print('FATAL BUG: equipment_menu, no player.equipment found')
+        pass
+        
     menu(con, root, header, options, equipment_width, screen_width, screen_height)
             
 

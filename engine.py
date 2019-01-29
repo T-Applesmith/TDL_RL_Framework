@@ -376,7 +376,8 @@ def main():
                 except FileNotFoundError:
                     show_load_error_message = True
             elif exit_game:
-                break
+                exit() #probably better way to safely close console
+                break #vestigal
 
         else:
             root_console.clear()
