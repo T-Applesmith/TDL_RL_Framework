@@ -145,5 +145,48 @@ def character_screen(root_console, player, character_screen_width, character_scr
     root_console.blit(window, x, y, character_screen_width, character_screen_height, 0, 0)
 
 
+def keybindings_screen(con, root, header, menu_width, screen_width, screen_height):
+    from input_handlers import handle_player_turn_keys
+    
+    options = []
+    
+    for i in range(32, 126):
+        action = handle_player_turn_keys(i)
+        if action:
+            print(str(action))
+            option.append(str(action))
+    
+    menu(con, root, header, options, menu_width, screen_width, screen_height)
+
+
+def escape_screen(con, root, header, menu_width, screen_width, screen_height):
+    options = []
+    options.append('Options')
+    options.append('Help')
+    options.append('Save & Quit [Esc]')
+    
+    menu(con, root, header, options, menu_width, screen_width, screen_height)
+
+
+def help_screen(root_console, player, character_screen_width, character_screen_height, screen_width,
+                     screen_height):
+    window = tdl.Console(character_screen_width, character_screen_height)
+
+    window.draw_rect(0, 0, character_screen_width, character_screen_height, None, fg=(255, 255, 255), bg=None)
+
+    #Update with HELP Information - tell the player what is going on
+    window.draw_str(0, 1, 'Character Information')
+    window.draw_str(0, 2, 'Level: {0}'.format(player.level.current_level))
+    window.draw_str(0, 3, 'Experience: {0}'.format(player.level.current_xp))
+    window.draw_str(0, 4, 'Experience to Level: {0}'.format(player.level.experience_to_next_level))
+    window.draw_str(0, 6, 'Maximum HP: {0}'.format(player.fighter.max_hp))
+    window.draw_str(0, 7, 'Attack: {0}'.format(player.fighter.power))
+    window.draw_str(0, 8, 'Defense: {0}'.format(player.fighter.defense))
+
+    x = screen_width // 2 - character_screen_width // 2
+    y = screen_height // 2 - character_screen_height // 2
+    root_console.blit(window, x, y, character_screen_width, character_screen_height, 0, 0)
+
+
 def message_box(con, root_console, header, width, screen_width, screen_height):
     menu(con, root_console, header, [], width, screen_width, screen_height)

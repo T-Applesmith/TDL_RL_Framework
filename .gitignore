@@ -1,6 +1,6 @@
 savegame.dat.bak
 savegame.dat.dat
 savegame.dat.dir
-/__pycache__
+/__pycache__/
 *.json
 *.pyc
