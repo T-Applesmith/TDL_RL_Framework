@@ -23,7 +23,21 @@ def menu(con, root, header, options, width, screen_width, screen_height):
     letter_index = ord('a')
     for option_text in options:
         text = '(' + chr(letter_index) + ') ' + option_text
-        window.draw_str(0, y, text, bg=None)
+
+        #if option is too long, truncate it
+        #this should be changed in the future
+        loop_str_print_exception = True
+        while(loop_str_print_exception):
+            loop_str_print_exception = False
+            try:
+                window.draw_str(0, y, text, bg=None)
+            except tdl.TDLError as err:
+                print("tdl.TDLError: {0}: {1}".format(err, text))
+                loop_str_print_exception = True
+                text_len = len(text)
+                text = text[:text_len-1]
+                pass
+            
         y += 1
         letter_index += 1
 
@@ -47,17 +61,21 @@ def inventory_menu(con, root, header, player, inventory_width, screen_width, scr
                     if player.equipment.main_hand == item:
                         options.append('{0} (on main hand)'.format(item.name))
                     else:
-                        options.append('{0} (BUG: attempted to be on main hand)'.format(item.name))
+                        #options.append('{0} (BUG: on main hand)'.format(item.name))
+                        #options.append('{0} (BUG: attempted to be on main hand)'.format(item.name))
+                        options.append('{0}'.format(item.name))
                 elif player.equipment.off_hand:
                     if player.equipment.off_hand == item:
                         options.append('{0} (on off hand)'.format(item.name))
                     else:
-                        options.append('{0} (BUG: attempted to be on off hand)'.format(item.name))
+                        #options.append('{0} (BUG: offhand)'.format(item.name))
+                        #options.append('{0} (BUG: attempted to be on off hand)'.format(item.name))
+                        options.append('{0}'.format(item.name))
                 else:
                     options.append(item.name)
             else:
                 #print(']nREPORT\nplayer.equipment: {0}'.format(player.equipment))
-                #print('FATAL BUG: inventory_menu, no player.equipment found')
+                print('FATAL BUG: inventory_menu, no player.equipment found')
                 pass
                                 
     menu(con, root, header, options, inventory_width, screen_width, screen_height)
