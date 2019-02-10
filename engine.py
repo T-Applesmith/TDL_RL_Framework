@@ -73,8 +73,10 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         take_stairs = action.get('take_stairs')
         level_up = action.get('level_up')
         show_character_screen = action.get('show_character_screen')
-        show_equipment_screen = action.get('show_equipment_screen')
+        show_equipment_menu = action.get('show_equipment_menu')
         show_keybindings_menu = action.get('show_keybindings_menu')
+        show_options_menu = action.get('show_options_menu')
+        show_help_screen = action.get('show_help_screen')
         equipment_index = action.get('equipment_index')
         return_to_game = action.get('return_to_game')
         exit = action.get('exit')
@@ -163,13 +165,19 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             previous_game_state = game_state
             game_state = GameStates.CHARACTER_SCREEN
 
-        if show_equipment_screen:
+        if show_equipment_menu:
             previous_game_state = game_state
             game_state = GameStates.EQUIPMENT_MENU
 
         if show_keybindings_menu:
             #previous_game_state = game_state
             game_state = GameStates.KEYBINDINGS_MENU
+
+        if show_help_screen:
+            game_state = GameStates.HELP_SCREEN
+
+        if show_options_menu:
+            game_state = GameStates.OPTIONS_MENU
 
         if equipment_index is not None and previous_game_state != GameStates.PLAYER_DEAD:
             if equipment_index == 0:
@@ -212,9 +220,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 print('game_state: '+str(game_state))
                 save_game(player, entities, game_map, message_log, game_state)
                 print('==============\nSave complete!\n==============\n')
-
                 return True
-            elif game_state == GameStates.KEYBINDINGS_MENU:
+            elif game_state in (GameStates.KEYBINDINGS_MENU, GameStates.OPTIONS_MENU, GameStates.HELP_SCREEN):
                 #for those that go to and from the Escape_Menu
                 game_state = GameStates.ESCAPE_MENU
             else:
@@ -391,8 +398,7 @@ def main():
                 except FileNotFoundError:
                     show_load_error_message = True
             elif exit_game:
-                exit() #probably better way to safely close console
-                break #vestigal
+                break
 
         else:
             root_console.clear()

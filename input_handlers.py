@@ -16,13 +16,15 @@ def handle_keys(user_input, game_state):
         elif game_state == GameStates.CHARACTER_SCREEN:
             return handle_character_screen(user_input)
         elif game_state == GameStates.EQUIPMENT_MENU:
-            return handle_equipment_screen(user_input)
+            return handle_equipment_menu(user_input)
         elif game_state == GameStates.KEYBINDINGS_MENU:
             return handle_keybindings_menu(user_input)
         elif game_state == GameStates.ESCAPE_MENU:
             return handle_escape_menu(user_input)
         elif game_state == GameStates.HELP_SCREEN:
             return handle_help_screen(user_input)
+        elif game_state == GameStates.OPTIONS_MENU:
+            return handle_options_menu(user_input)
 
     return {}
 
@@ -71,7 +73,11 @@ def handle_player_turn_keys(user_input):
         return {'show_character_screen': True}
 
     elif key_char == 'e':
-        return {'show_equipment_screen': True}
+        return {'show_equipment_menu': True}
+
+    elif key_char == '?':
+        #Open the help_screen
+        return {'show_help_screen': True}
 
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen
@@ -98,6 +104,13 @@ def handle_keybindings_menu(user_input):
     return {}
 
 
+def handle_options_menu(user_input):
+    if user_input.key == 'ESCAPE':
+        return {'exit': True}
+
+    return {}
+
+
 def handle_help_screen(user_input):
     if user_input.key == 'ESCAPE':
         return {'exit': True}
@@ -114,13 +127,13 @@ def handle_escape_menu(user_input):
         return {'return_to_game': True}
     elif user_input.char == 'o':# or user_input.key == 'O':
         #Open the options_menu
-        pass
+        return {'show_options_menu': True}
     elif user_input.char == 'k':
         #Open the keybindings_menu
         return {'show_keybindings_menu': True}
     elif user_input.char == 'h':# or user_input.key == 'H':
         #Open the help_screen
-        pass
+        return {'show_help_screen': True}
     elif user_input.char == 's':# or user_input.key == 'S':
         #Save and quit the game
         return {'exit': True}
@@ -201,7 +214,7 @@ def handle_character_screen(user_input):
     return {}
 
 
-def handle_equipment_screen(user_input):
+def handle_equipment_menu(user_input):
     if not user_input.char:
         return {}
 

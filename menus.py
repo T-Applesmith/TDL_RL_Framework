@@ -133,13 +133,11 @@ def character_screen(root_console, player, character_screen_width, character_scr
 
     window.draw_rect(0, 0, character_screen_width, character_screen_height, None, fg=(255, 255, 255), bg=None)
 
-    window.draw_str(0, 1, 'Character Information')
-    window.draw_str(0, 2, 'Level: {0}'.format(player.level.current_level))
-    window.draw_str(0, 3, 'Experience: {0}'.format(player.level.current_xp))
-    window.draw_str(0, 4, 'Experience to Level: {0}'.format(player.level.experience_to_next_level))
-    window.draw_str(0, 6, 'Maximum HP: {0}'.format(player.fighter.max_hp))
-    window.draw_str(0, 7, 'Attack: {0}'.format(player.fighter.power))
-    window.draw_str(0, 8, 'Defense: {0}'.format(player.fighter.defense))
+    character_screen_array = ['Character Information', 'Level: {0}'.format(player.level.current_level),\
+    'Experience: {0}'.format(player.level.current_xp),'Experience to Level: {0}'.format(player.level.experience_to_next_level),\
+    'Maximum HP: {0}'.format(player.fighter.max_hp), 'Attack: {0}'.format(player.fighter.power),\
+    'Defense: {0}'.format(player.fighter.defense)]
+    menu_text_left_justified(window, 0, 1, character_screen_height, character_screen_array)
 
     x = screen_width // 2 - character_screen_width // 2
     y = screen_height // 2 - character_screen_height // 2
@@ -177,36 +175,53 @@ def escape_menu(root_console, header, menu_width, menu_height, screen_width, scr
 
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
-    window.draw_str(0, 1, '{0}'.format(header))
-    window.draw_str(0, 2, '(O)ptions')
-    window.draw_str(0, 3, '(K)eybindings')
-    window.draw_str(0, 4, '(H)elp')
-    window.draw_str(0, 5, '(S)ave & Quit')
+    escape_array = ['{0}'.format(header), '(O)ptions', '(K)eybindings', '(H)elp', '(S)ave & Quit']
+    menu_text_left_justified(window, 0, 1, menu_height, escape_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
     root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
 
 
-def help_screen(root_console, player, character_screen_width, character_screen_height, screen_width,
-                     screen_height):
-    window = tdl.Console(character_screen_width, character_screen_height)
+def options_menu(root_console, header, menu_width, menu_height, screen_width, screen_height):
+    window = tdl.Console(menu_width, menu_height)
 
-    window.draw_rect(0, 0, character_screen_width, character_screen_height, None, fg=(255, 255, 255), bg=None)
+    window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
-    #Update with HELP Information - tell the player what is going on
-    window.draw_str(0, 1, 'Character Information')
-    window.draw_str(0, 2, 'Level: {0}'.format(player.level.current_level))
-    window.draw_str(0, 3, 'Experience: {0}'.format(player.level.current_xp))
-    window.draw_str(0, 4, 'Experience to Level: {0}'.format(player.level.experience_to_next_level))
-    window.draw_str(0, 6, 'Maximum HP: {0}'.format(player.fighter.max_hp))
-    window.draw_str(0, 7, 'Attack: {0}'.format(player.fighter.power))
-    window.draw_str(0, 8, 'Defense: {0}'.format(player.fighter.defense))
+    options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!']
+    menu_text_left_justified(window, 0, 1, menu_height, options_array)
 
-    x = screen_width // 2 - character_screen_width // 2
-    y = screen_height // 2 - character_screen_height // 2
-    root_console.blit(window, x, y, character_screen_width, character_screen_height, 0, 0)
+    x = screen_width // 2 - menu_width // 2
+    y = screen_height // 2 - menu_height // 2
+    root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
+
+
+def help_screen(root_console, header, menu_width, menu_height, screen_width, screen_height):
+    window = tdl.Console(menu_width, menu_height)
+
+    window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
+
+    help_screen_array = ['{0}'.format(header),\
+                         'Press keys in [] or in () to select that option within menus.',\
+                         'Press [Esc] to pause the game and access other menus,',\
+                         '   or to quickly exit menus.',\
+                         'The Keybindings Menu shows available actions during gameplay.',\
+                         '   (It will be cleaned up in the future)',\
+                         '   move {1, 0} means move right one and up zero.'] 
+                         
+    menu_text_left_justified(window, 0, 1, menu_height, help_screen_array)
+
+    x = screen_width // 2 - menu_width // 2
+    y = screen_height // 2 - menu_height // 2
+    root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
 
 
 def message_box(con, root_console, header, width, screen_width, screen_height):
     menu(con, root_console, header, [], width, screen_width, screen_height)
+
+
+def menu_text_left_justified(window, x, y, menu_height, text_array):
+    for text in text_array:
+        if y < menu_height:
+            window.draw_str(x, y, text)
+            y+=1
