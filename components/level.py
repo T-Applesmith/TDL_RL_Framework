@@ -32,7 +32,7 @@ class Level:
 
     @staticmethod
     def from_json(json_data):
-        level_json = json_data.get('level')
+        #level_json = json_data.get('level')
         current_level = json_data.get('current_level')
         current_xp = json_data.get('current_xp')
         level_up_base = json_data.get('level_up_base')

@@ -26,6 +26,7 @@ def menu(con, root, header, options, width, screen_width, screen_height):
 
         #if option is too long, truncate it
         #this should be changed in the future
+        #see above for wrapped text
         loop_str_print_exception = True
         while(loop_str_print_exception):
             loop_str_print_exception = False
@@ -145,27 +146,46 @@ def character_screen(root_console, player, character_screen_width, character_scr
     root_console.blit(window, x, y, character_screen_width, character_screen_height, 0, 0)
 
 
-def keybindings_screen(con, root, header, menu_width, screen_width, screen_height):
+def keybindings_screen(root_console, header, menu_width, menu_height, screen_width, screen_height):
     from input_handlers import handle_player_turn_keys
-    
-    options = []
-    
+    import tdl
+
+    window = tdl.Console(menu_width, menu_height)
+    action_number = 2
+
+    window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
+    window.draw_str(0, 0, '{0}'.format(header))
+
+    #space? starts at 32
     for i in range(32, 126):
-        action = handle_player_turn_keys(i)
+        event = tdl.event.KeyDown(key=chr(i),char=chr(i))
+        action = handle_player_turn_keys(event)
         if action:
-            print(str(action))
-            option.append(str(action))
-    
-    menu(con, root, header, options, menu_width, screen_width, screen_height)
+            window.draw_str(0, action_number, chr(i) +' '+ str(action))
+            action_number += 1
+
+        if action_number >= menu_height:
+            break
+
+    x = screen_width // 2 - menu_width // 2
+    y = screen_height // 2 - menu_height // 2
+    root_console.blit(window, x, y, menu_width, menu_height, 0, 0)    
 
 
-def escape_screen(con, root, header, menu_width, screen_width, screen_height):
-    options = []
-    options.append('Options')
-    options.append('Help')
-    options.append('Save & Quit [Esc]')
-    
-    menu(con, root, header, options, menu_width, screen_width, screen_height)
+def escape_menu(root_console, header, menu_width, menu_height, screen_width, screen_height):
+    window = tdl.Console(menu_width, menu_height)
+
+    window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
+
+    window.draw_str(0, 1, '{0}'.format(header))
+    window.draw_str(0, 2, '(O)ptions')
+    window.draw_str(0, 3, '(K)eybindings')
+    window.draw_str(0, 4, '(H)elp')
+    window.draw_str(0, 5, '(S)ave & Quit')
+
+    x = screen_width // 2 - menu_width // 2
+    y = screen_height // 2 - menu_height // 2
+    root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
 
 
 def help_screen(root_console, player, character_screen_width, character_screen_height, screen_width,

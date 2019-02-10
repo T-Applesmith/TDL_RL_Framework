@@ -72,7 +72,8 @@ class Fighter:
             'max_hp': self.base_max_hp,
             'hp': self.hp,
             'defense': self.base_defense,
-            'power': self.base_power
+            'power': self.base_power,
+            'xp': self.xp
         }
 
         return json_data
@@ -83,8 +84,9 @@ class Fighter:
         hp = json_data.get('hp')
         defense = json_data.get('defense')
         power = json_data.get('power')
+        xp = json_data.get('xp')
 
-        fighter = Fighter(max_hp, defense, power)
+        fighter = Fighter(max_hp, defense, power, xp)
         fighter.hp = hp
 
         return fighter

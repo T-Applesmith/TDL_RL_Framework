@@ -192,6 +192,7 @@ class Entity:
 
         if level_json:
             entity.level = Level.from_json(level_json)
+            print('level.from_json: '+str(Level.to_json(entity.level)))
             entity.level.owner = entity
 
         if stairs_json:

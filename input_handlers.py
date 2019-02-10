@@ -15,14 +15,25 @@ def handle_keys(user_input, game_state):
             return handle_level_up_menu(user_input)
         elif game_state == GameStates.CHARACTER_SCREEN:
             return handle_character_screen(user_input)
-        elif game_state == GameStates.EQUIPMENT_SCREEN:
+        elif game_state == GameStates.EQUIPMENT_MENU:
             return handle_equipment_screen(user_input)
+        elif game_state == GameStates.KEYBINDINGS_MENU:
+            return handle_keybindings_menu(user_input)
+        elif game_state == GameStates.ESCAPE_MENU:
+            return handle_escape_menu(user_input)
+        elif game_state == GameStates.HELP_SCREEN:
+            return handle_help_screen(user_input)
 
     return {}
 
 
 def handle_player_turn_keys(user_input):
-    key_char = user_input.char
+    try:
+        key_char = user_input.char
+    except AttributeError:
+        print('ERROR CAUGHT: AttributeError: input_handlers.handle_player_turn_keys')
+        key_char = chr(user_input)
+        user_input = chr(user_input)
 
     # Movement keys
     if user_input.key == 'UP' or key_char == 'k':
@@ -75,6 +86,43 @@ def handle_player_turn_keys(user_input):
 
 def handle_targeting_keys(user_input):
     if user_input.key == 'ESCAPE':
+        return {'exit': True}
+
+    return {}
+
+
+def handle_keybindings_menu(user_input):
+    if user_input.key == 'ESCAPE':
+        return {'exit': True}
+
+    return {}
+
+
+def handle_help_screen(user_input):
+    if user_input.key == 'ESCAPE':
+        return {'exit': True}
+
+    return {}
+
+
+def handle_escape_menu(user_input):
+    if user_input.key == 'ENTER' and user_input.alt:
+        # Alt+Enter: toggle full screen
+        return {'fullscreen': True}
+    elif user_input.key == 'ESCAPE':
+        #Return to the previous game state
+        return {'return_to_game': True}
+    elif user_input.char == 'o':# or user_input.key == 'O':
+        #Open the options_menu
+        pass
+    elif user_input.char == 'k':
+        #Open the keybindings_menu
+        return {'show_keybindings_menu': True}
+    elif user_input.char == 'h':# or user_input.key == 'H':
+        #Open the help_screen
+        pass
+    elif user_input.char == 's':# or user_input.key == 'S':
+        #Save and quit the game
         return {'exit': True}
 
     return {}

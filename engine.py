@@ -69,11 +69,14 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         show_inventory = action.get('show_inventory')
         drop_inventory = action.get('drop_inventory')
         inventory_index = action.get('inventory_index')
+        escape_index = action.get('escape_index')
         take_stairs = action.get('take_stairs')
         level_up = action.get('level_up')
         show_character_screen = action.get('show_character_screen')
         show_equipment_screen = action.get('show_equipment_screen')
+        show_keybindings_menu = action.get('show_keybindings_menu')
         equipment_index = action.get('equipment_index')
+        return_to_game = action.get('return_to_game')
         exit = action.get('exit')
         fullscreen = action.get('fullscreen')
 
@@ -131,6 +134,9 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             elif game_state == GameStates.DROP_INVENTORY:
                 player_turn_results.extend(player.inventory.drop_item(item, constants['colors']))
 
+        if escape_index is not None:
+            pass
+
         if take_stairs and game_state == GameStates.PLAYERS_TURN:
             for entity in entities:
                 if entity.stairs and entity.x == player.x and entity.y == player.y:
@@ -159,15 +165,13 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
         if show_equipment_screen:
             previous_game_state = game_state
-            game_state = GameStates.EQUIPMENT_SCREEN
+            game_state = GameStates.EQUIPMENT_MENU
+
+        if show_keybindings_menu:
+            #previous_game_state = game_state
+            game_state = GameStates.KEYBINDINGS_MENU
 
         if equipment_index is not None and previous_game_state != GameStates.PLAYER_DEAD:
-            #from equipment_slots import EquipmentSlots
-            #: #and equipment_index < len(player.inventory.items):
-            #equipment_selected = player.inventory.items[inventory_index]
-            #print('equipmentslots: {0}'.format(equipment_index))
-            #print('EquipmentSlots[equipment_index]: {0}'.format(EquipmentSlots(equipment_index)))
-            #print('equipment: {0}'.format(player.equipment))
             if equipment_index == 0:
                 equipment_selected = player.equipment.main_hand
             elif equipment_index == 1:
@@ -175,7 +179,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             else:
                 equipment_selected = None
 
-            if game_state == GameStates.EQUIPMENT_SCREEN and equipment_selected is not None:
+            if game_state == GameStates.EQUIPMENT_MENU and equipment_selected is not None:
                 player.inventory.add_item(equipment_selected, constants['colors'])
                 player_turn_results.extend(player.equipment.toggle_equip(equipment_selected))
 
@@ -189,12 +193,17 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             elif right_click:
                 player_turn_results.append({'targeting_cancelled': True})
 
+        if return_to_game:
+            if game_state == GameStates.ESCAPE_MENU:
+                game_state = previous_game_state
+
         if exit:
-            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_SCREEN):
+            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU):
                 game_state = previous_game_state
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
-            else:
+            elif game_state == GameStates.ESCAPE_MENU:
+                game_state = previous_game_state
                 print('\nBeginning save...')
                 print('player: '+str(player))
                 print('entities: '+str(entities))
@@ -205,6 +214,12 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 print('==============\nSave complete!\n==============\n')
 
                 return True
+            elif game_state == GameStates.KEYBINDINGS_MENU:
+                #for those that go to and from the Escape_Menu
+                game_state = GameStates.ESCAPE_MENU
+            else:
+                previous_game_state = game_state
+                game_state = GameStates.ESCAPE_MENU
 
         if fullscreen:
             tdl.set_fullscreen(not tdl.get_fullscreen())
