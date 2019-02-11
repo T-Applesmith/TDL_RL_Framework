@@ -83,8 +83,8 @@ def handle_player_turn_keys(user_input):
         # Alt+Enter: toggle full screen
         return {'fullscreen': True}
     elif user_input.key == 'ESCAPE':
-        # Exit the game
-        return {'exit': True}
+        # Escape Menu
+        return {'return_to_game': True}
 
     # No key was pressed
     return {}
@@ -92,28 +92,28 @@ def handle_player_turn_keys(user_input):
 
 def handle_targeting_keys(user_input):
     if user_input.key == 'ESCAPE':
-        return {'exit': True}
+        return {'return_to_game': True}
 
     return {}
 
 
 def handle_keybindings_menu(user_input):
     if user_input.key == 'ESCAPE':
-        return {'exit': True}
+        return {'return_to_game': True}
 
     return {}
 
 
 def handle_options_menu(user_input):
     if user_input.key == 'ESCAPE':
-        return {'exit': True}
+        return {'return_to_game': True}
 
     return {}
 
 
 def handle_help_screen(user_input):
     if user_input.key == 'ESCAPE':
-        return {'exit': True}
+        return {'return_to_game': True}
 
     return {}
 
@@ -173,8 +173,8 @@ def handle_inventory_keys(user_input):
         # Alt+Enter: toggle full screen
         return {'fullscreen': True}
     elif user_input.key == 'ESCAPE':
-        # Exit the game
-        return {'exit': True}
+        # Return to the game
+        return {'return_to_game': True}
 
     return {}
 
@@ -209,7 +209,7 @@ def handle_level_up_menu(user_input):
 
 def handle_character_screen(user_input):
     if user_input.key == 'ESCAPE':
-        return {'exit': True}
+        return {'return_to_game': True}
 
     return {}
 
@@ -227,8 +227,8 @@ def handle_equipment_menu(user_input):
         # Alt+Enter: toggle full screen
         return {'fullscreen': True}
     elif user_input.key == 'ESCAPE':
-        # Exit the game
-        return {'exit': True}
+        # Return to the game
+        return {'return_to_game': True}
 
     return {}
 

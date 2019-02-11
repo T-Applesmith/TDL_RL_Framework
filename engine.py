@@ -1,3 +1,5 @@
+#http://www.roguebasin.com/index.php?title=Roguelike_Tutorial,_using_python3%2Btdl
+
 import tdl
 #https://python-tcod.readthedocs.io/en/latest/tdl.html
 
@@ -170,7 +172,6 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             game_state = GameStates.EQUIPMENT_MENU
 
         if show_keybindings_menu:
-            #previous_game_state = game_state
             game_state = GameStates.KEYBINDINGS_MENU
 
         if show_help_screen:
@@ -191,26 +192,75 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 player.inventory.add_item(equipment_selected, constants['colors'])
                 player_turn_results.extend(player.equipment.toggle_equip(equipment_selected))
 
-        if game_state == GameStates.TARGETING:
-            if left_click:
+        if left_click:
+            #print('''constants['screen_height']: {0}'''.format(constants['screen_height']))
+            if game_state == GameStates.TARGETING:
                 target_x, target_y = left_click
 
                 item_use_results = player.inventory.use(targeting_item, constants['colors'], entities=entities,
                                                         game_map=game_map, target_x=target_x, target_y=target_y)
                 player_turn_results.extend(item_use_results)
-            elif right_click:
+                
+            elif game_state == GameStates.ESCAPE_MENU:
+                target_x, target_y = left_click
+                #22 top, 25 bottom
+                if constants['screen_height'] == 50:
+                    if target_y == 22:
+                        game_state = GameStates.OPTIONS_MENU
+                    elif target_y == 23:
+                        game_state = GameStates.KEYBINDINGS_MENU
+                    elif target_y == 24:
+                        game_state = GameStates.HELP_SCREEN
+                    elif target_y == 25:
+                        exit = True
+                else:
+                    print('''MOUSE DISABLED: constants['screen_height'] changed''')
+
+            elif game_state == GameStates.EQUIPMENT_MENU:
+                target_x, target_y = left_click
+                print('{0}, {1}'.format(target_x, target_y))
+
+            elif game_state == GameStates.SHOW_INVENTORY:
+                #inventory adjusts, figure this out
+                target_x, target_y = left_click
+                print('{0}, {1}'.format(target_x, target_y))
+
+            elif game_state == GameStates.DROP_INVENTORY:
+                #inventory adjusts, figure this out
+                target_x, target_y = left_click
+                print('{0}, {1}'.format(target_x, target_y))
+
+            elif game_state == GameStates.PLAYERS_TURN:
+                target_x, target_y = left_click
+                print('{0}, {1}'.format(target_x, target_y))
+                    
+        if right_click:
+            if game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
+
+            elif game_state == GameStates.ESCAPE_MENU:
+                return_to_game = True
+
+            elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU,\
+                          GameStates.OPTIONS_MENU, GameStates.KEYBINDINGS_MENU, GameStates.HELP_SCREEN):
+                exit = True
 
         if return_to_game:
             if game_state == GameStates.ESCAPE_MENU:
                 game_state = previous_game_state
-
-        if exit:
-            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU):
+            elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU):
                 game_state = previous_game_state
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
-            elif game_state == GameStates.ESCAPE_MENU:
+            elif game_state in (GameStates.KEYBINDINGS_MENU, GameStates.OPTIONS_MENU, GameStates.HELP_SCREEN):
+                #for those that go to and from the Escape_Menu
+                game_state = GameStates.ESCAPE_MENU
+            else:
+                previous_game_state = game_state
+                game_state = GameStates.ESCAPE_MENU
+
+        if exit:
+            if game_state == GameStates.ESCAPE_MENU:
                 game_state = previous_game_state
                 print('\nBeginning save...')
                 print('player: '+str(player))
@@ -221,9 +271,6 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 save_game(player, entities, game_map, message_log, game_state)
                 print('==============\nSave complete!\n==============\n')
                 return True
-            elif game_state in (GameStates.KEYBINDINGS_MENU, GameStates.OPTIONS_MENU, GameStates.HELP_SCREEN):
-                #for those that go to and from the Escape_Menu
-                game_state = GameStates.ESCAPE_MENU
             else:
                 previous_game_state = game_state
                 game_state = GameStates.ESCAPE_MENU
@@ -359,6 +406,7 @@ def main():
     main_menu_background_image = image_load('menu_background.png')
 
     tdl.set_fps(60) #Let's not be google chrome
+    #tdl.get_fps()
 
     while not tdl.event.is_window_closed():
         for event in tdl.event.get():

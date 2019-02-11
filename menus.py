@@ -188,7 +188,8 @@ def options_menu(root_console, header, menu_width, menu_height, screen_width, sc
 
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
-    options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!']
+    options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!',\
+                     'Master Volume: 9999', 'Display FPS: FALSE']
     menu_text_left_justified(window, 0, 1, menu_height, options_array)
 
     x = screen_width // 2 - menu_width // 2
