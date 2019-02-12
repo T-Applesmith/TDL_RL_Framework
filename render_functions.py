@@ -3,7 +3,7 @@ from enum import Enum
 from game_states import GameStates
 
 from menus import character_screen, inventory_menu, level_up_menu, equipment_menu, escape_menu, keybindings_screen,\
-help_screen, options_menu
+     help_screen, options_menu, fps_counter
 
 
 class RenderOrder(Enum):
@@ -42,7 +42,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
 
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, screen_width,
-               screen_height, bar_width, panel_height, panel_y, mouse_coordinates, colors, game_state):
+               screen_height, bar_width, panel_height, panel_y, mouse_coordinates, colors, game_state, constants):
     # Draw all the tiles in the game map
     if fov_recompute:
         for x, y in game_map:
@@ -116,6 +116,9 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
     elif game_state == GameStates.HELP_SCREEN:
         help_screen(root_console, 'HELP (PROOF OF CONCEPT)', 60, 40, screen_width, screen_height)
+
+    elif True:
+        fps_counter(root_console, constants['screen_width'])
         
 
 

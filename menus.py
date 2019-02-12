@@ -189,7 +189,7 @@ def options_menu(root_console, header, menu_width, menu_height, screen_width, sc
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
     options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!',\
-                     'Master Volume: 9999', 'Display FPS: FALSE']
+                     'Master Volume: 9999', 'Display FPS: FALSE', 'FPS Cap: 60']
     menu_text_left_justified(window, 0, 1, menu_height, options_array)
 
     x = screen_width // 2 - menu_width // 2
@@ -215,6 +215,15 @@ def help_screen(root_console, header, menu_width, menu_height, screen_width, scr
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
     root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
+
+
+def fps_counter(root_console, screen_width):
+    width = 8
+    height = 1
+    window = tdl.Console(width, height)
+    window.draw_str(0, 0, 'fps:{0}'.format(tdl.get_fps()))
+    root_console.blit(window, screen_width-7, 0, width, height, 0, 0)
+    
 
 
 def message_box(con, root_console, header, width, screen_width, screen_height):

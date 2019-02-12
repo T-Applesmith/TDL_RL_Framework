@@ -8,6 +8,7 @@ from tcod import image_load, console
 
 from loader_functions.initialize_new_game import get_constants, get_game_variables
 from loader_functions.json_loaders import load_game, save_game
+from loader_functions.config_loaders import write_config, read_config
 
 from utils.map_utils import next_floor
 
@@ -39,7 +40,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
                    constants['screen_width'], constants['screen_height'], constants['bar_width'],
                    constants['panel_height'], constants['panel_y'], mouse_coordinates, constants['colors'],
-                   game_state)
+                   game_state, constants)
         tdl.flush()
 
         clear_all(con, entities)
@@ -387,6 +388,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
 def main():
     constants = get_constants()
+    config = read_config()
 
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
@@ -405,8 +407,7 @@ def main():
 
     main_menu_background_image = image_load('menu_background.png')
 
-    tdl.set_fps(60) #Let's not be google chrome
-    #tdl.get_fps()
+    tdl.set_fps(int(config['fps_cap'])) #Let's not be google chrome
 
     while not tdl.event.is_window_closed():
         for event in tdl.event.get():
@@ -446,6 +447,7 @@ def main():
                 except FileNotFoundError:
                     show_load_error_message = True
             elif exit_game:
+                write_config()
                 break
 
         else:
