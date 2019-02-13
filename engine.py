@@ -38,9 +38,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                                  light_walls=constants['fov_light_walls'])
 
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
-                   constants['screen_width'], constants['screen_height'], constants['bar_width'],
-                   constants['panel_height'], constants['panel_y'], mouse_coordinates, constants['colors'],
-                   game_state, constants, config)
+                   mouse_coordinates, game_state, constants, config)
         tdl.flush()
 
         clear_all(con, entities)
