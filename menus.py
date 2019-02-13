@@ -6,10 +6,19 @@ import textwrap
 def menu(con, root, header, options, width, screen_width, screen_height):
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options.')
 
-    # calculate total height for the header (after textwrap) and one line per option
+    # calculate total height for the header (after textwrap)
     header_wrapped = textwrap.wrap(header, width)
     header_height = len(header_wrapped)
-    height = len(options) + header_height
+
+    # calculate total height of the options (after textwrap)
+    option_height = 0
+    #for option in options:
+    #    option_wrapped = textwrap.wrap(option, width)
+    #    option_height += len(option_wrapped)
+    option_height = len(options)
+
+    # calculate total height of the menu
+    height = option_height + header_height
 
     # create an off-screen console that represents the menu's window
     window = tdl.Console(width, height)
@@ -24,9 +33,13 @@ def menu(con, root, header, options, width, screen_width, screen_height):
     for option_text in options:
         text = '(' + chr(letter_index) + ') ' + option_text
 
+        # if option is too long, wrap it
+        #option_wrapped = textwrap.wrap(option_text, width)
+        #for i, line in enumerate(option_wrapped):
+        #    window.draw_str(0, y, option_wrapped[i])
+        #    y += 1
+
         #if option is too long, truncate it
-        #this should be changed in the future
-        #see above for wrapped text
         loop_str_print_exception = True
         while(loop_str_print_exception):
             loop_str_print_exception = False
@@ -234,5 +247,17 @@ def message_box(con, root_console, header, width, screen_width, screen_height):
 def menu_text_left_justified(window, x, y, menu_height, text_array):
     for text in text_array:
         if y < menu_height:
+            #if text is too long, truncate it
+            loop_str_print_exception = True
+            while(loop_str_print_exception):
+                loop_str_print_exception = False
+                try:
+                    window.draw_str(0, y, text, bg=None)
+                except tdl.TDLError as err:
+                    print("tdl.TDLError: {0}: {1}".format(err, text))
+                    loop_str_print_exception = True
+                    text_len = len(text)
+                    text = text[:text_len-1]
+                    pass
             window.draw_str(x, y, text)
             y+=1
