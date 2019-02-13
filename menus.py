@@ -183,13 +183,14 @@ def escape_menu(root_console, header, menu_width, menu_height, screen_width, scr
     root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
 
 
-def options_menu(root_console, header, menu_width, menu_height, screen_width, screen_height):
+def options_menu(root_console, header, menu_width, menu_height, screen_width, screen_height, config):
     window = tdl.Console(menu_width, menu_height)
 
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
     options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!',\
-                     'Master Volume: 9999', 'Display FPS: FALSE', 'FPS Cap: 60']
+                     'Master Volume: \N{INFINITY}', 'Display FPS: {0}'.format(config['fps_display']),\
+                     'FPS Cap: {0}'.format(config['fps_cap'])]
     menu_text_left_justified(window, 0, 1, menu_height, options_array)
 
     x = screen_width // 2 - menu_width // 2

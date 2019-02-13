@@ -1,9 +1,11 @@
+import tdl
+
 from enum import Enum
-
 from game_states import GameStates
-
 from menus import character_screen, inventory_menu, level_up_menu, equipment_menu, escape_menu, keybindings_screen,\
      help_screen, options_menu, fps_counter
+
+from loader_functions.config_loaders import write_config
 
 
 class RenderOrder(Enum):
@@ -42,7 +44,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
 
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, screen_width,
-               screen_height, bar_width, panel_height, panel_y, mouse_coordinates, colors, game_state, constants):
+               screen_height, bar_width, panel_height, panel_y, mouse_coordinates, colors, game_state, constants, config):
     # Draw all the tiles in the game map
     if fov_recompute:
         for x, y in game_map:
@@ -112,14 +114,13 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
         keybindings_screen(root_console, 'KEYBINDINGS (PROOF OF CONCEPT)', 50, 40, screen_width, screen_height)
 
     elif game_state == GameStates.OPTIONS_MENU:
-        options_menu(root_console, 'OPTIONS (PROOF OF CONCEPT)', 30, 10, screen_width, screen_height)
+        options_menu(root_console, 'OPTIONS (PROOF OF CONCEPT)', 30, 10, screen_width, screen_height, config)
 
     elif game_state == GameStates.HELP_SCREEN:
         help_screen(root_console, 'HELP (PROOF OF CONCEPT)', 60, 40, screen_width, screen_height)
 
-    elif True:
-        fps_counter(root_console, constants['screen_width'])
-        
+    if config['fps_display'] in ['True', 'TRUE', 'true']:
+        fps_counter(root_console, constants['screen_width'])     
 
 
 def clear_all(con, entities):

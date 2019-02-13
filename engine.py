@@ -21,7 +21,7 @@ from menus import main_menu, message_box
 from render_functions import clear_all, render_all
 
 
-def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants):
+def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config):
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
     fov_recompute = True
@@ -40,7 +40,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
                    constants['screen_width'], constants['screen_height'], constants['bar_width'],
                    constants['panel_height'], constants['panel_y'], mouse_coordinates, constants['colors'],
-                   game_state, constants)
+                   game_state, constants, config)
         tdl.flush()
 
         clear_all(con, entities)
@@ -234,6 +234,25 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             elif game_state == GameStates.PLAYERS_TURN:
                 target_x, target_y = left_click
                 print('{0}, {1}'.format(target_x, target_y))
+
+            elif game_state == GameStates.OPTIONS_MENU:
+                #update configs
+                write_config(config)
+                tdl.set_fps(int(config['fps_cap']))
+                
+                target_x, target_y = left_click
+                print('{0}, {1}'.format(target_x, target_y))
+                if target_x < 51 and target_x > 25:
+                    if target_y == 26:
+                        if config['fps_display'] == 'False':
+                            config['fps_display'] = 'True'
+                        elif config['fps_display'] == 'True':
+                            config['fps_display'] = 'False'
+                    elif target_y == 27:
+                        fps_cap = int(config['fps_cap']) + 5
+                        if fps_cap > 200:
+                            fps_cap = fps_cap - 200
+                        config['fps_cap'] = str(fps_cap)
                     
         if right_click:
             if game_state == GameStates.TARGETING:
@@ -447,14 +466,14 @@ def main():
                 except FileNotFoundError:
                     show_load_error_message = True
             elif exit_game:
-                write_config()
+                write_config(config)
                 break
 
         else:
             root_console.clear()
             con.clear()
             panel.clear()
-            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants)
+            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config)
 
             show_main_menu = True
 

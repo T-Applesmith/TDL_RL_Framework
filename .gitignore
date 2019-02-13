@@ -4,3 +4,4 @@ savegame.dat.dir
 /__pycache__/
 *.json
 *.pyc
+save_game.json
