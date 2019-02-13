@@ -244,20 +244,24 @@ def message_box(con, root_console, header, width, screen_width, screen_height):
     menu(con, root_console, header, [], width, screen_width, screen_height)
 
 
-def menu_text_left_justified(window, x, y, menu_height, text_array):
+def menu_text_left_justified(window, x, y, menu_height, text_array, truncation=True):
     for text in text_array:
         if y < menu_height:
-            #if text is too long, truncate it
-            loop_str_print_exception = True
-            while(loop_str_print_exception):
-                loop_str_print_exception = False
-                try:
-                    window.draw_str(0, y, text, bg=None)
-                except tdl.TDLError as err:
-                    print("tdl.TDLError: {0}: {1}".format(err, text))
-                    loop_str_print_exception = True
-                    text_len = len(text)
-                    text = text[:text_len-1]
-                    pass
-            window.draw_str(x, y, text)
+            if truncation:
+                #if text is too long, truncate it
+                loop_str_print_exception = True
+                while(loop_str_print_exception):
+                    loop_str_print_exception = False
+                    try:
+                        window.draw_str(x, y, text, bg=None)
+                    except tdl.TDLError as err:
+                        print("tdl.TDLError: {0}: {1}".format(err, text))
+                        loop_str_print_exception = True
+                        text_len = len(text)
+                        text = text[:text_len-1]
+                        pass
+            else:
+                pass
+            
+            #window.draw_str(x, y, text)
             y+=1
