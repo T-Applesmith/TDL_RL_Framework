@@ -150,7 +150,7 @@ def character_screen(root_console, player, character_screen_width, character_scr
     'Experience: {0}'.format(player.level.current_xp),'Experience to Level: {0}'.format(player.level.experience_to_next_level),\
     'Maximum HP: {0}'.format(player.fighter.max_hp), 'Attack: {0}'.format(player.fighter.power),\
     'Defense: {0}'.format(player.fighter.defense)]
-    menu_text_left_justified(window, 0, 1, character_screen_height, character_screen_array)
+    menu_text(window, 0, 1, character_screen_height, character_screen_array)
 
     x = screen_width // 2 - character_screen_width // 2
     y = screen_height // 2 - character_screen_height // 2
@@ -189,7 +189,7 @@ def escape_menu(root_console, header, menu_width, menu_height, screen_width, scr
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
     escape_array = ['{0}'.format(header), '(O)ptions', '(K)eybindings', '(H)elp', '(S)ave & Quit']
-    menu_text_left_justified(window, 0, 1, menu_height, escape_array)
+    menu_text(window, 0, 1, menu_height, escape_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -204,7 +204,7 @@ def options_menu(root_console, header, menu_width, menu_height, screen_width, sc
     options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!',\
                      'Master Volume: \N{INFINITY}', 'Display FPS: {0}'.format(config['fps_display']),\
                      'FPS Cap: {0}'.format(config['fps_cap'])]
-    menu_text_left_justified(window, 0, 1, menu_height, options_array)
+    menu_text(window, 0, 1, menu_height, options_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -224,7 +224,7 @@ def help_screen(root_console, header, menu_width, menu_height, screen_width, scr
                          '   (It will be cleaned up in the future)',\
                          '   move {1, 0} means move right one and up zero.'] 
                          
-    menu_text_left_justified(window, 0, 1, menu_height, help_screen_array)
+    menu_text(window, 0, 1, menu_height, help_screen_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -244,23 +244,36 @@ def message_box(con, root_console, header, width, screen_width, screen_height):
     menu(con, root_console, header, [], width, screen_width, screen_height)
 
 
-def menu_text_left_justified(window, x, y, menu_height, text_array, truncation=True):
+def menu_text(window, x, y, menu_height, text_array, truncation=True, tab_when_wrapped=False,
+                             justification='Left'):
     for text in text_array:
         if y < menu_height:
+            
             if truncation:
-                #if text is too long, truncate it
+                
+                # if text is too long, truncate it
                 loop_str_print_exception = True
                 while(loop_str_print_exception):
                     loop_str_print_exception = False
+                    
                     try:
-                        window.draw_str(x, y, text, bg=None)
+                        
+                        if justification == 'Left':
+                            window.draw_str(x, y, text, bg=None)
+                        if justification == 'Center':
+                            pass
+                        if justification == 'Right':
+                            pass
+                        
                     except tdl.TDLError as err:
+                        
                         print("tdl.TDLError: {0}: {1}".format(err, text))
                         loop_str_print_exception = True
                         text_len = len(text)
                         text = text[:text_len-1]
                         pass
             else:
+                # if text is too long, wrap it
                 pass
             
             #window.draw_str(x, y, text)

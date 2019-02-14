@@ -1,4 +1,5 @@
 import math
+import random
 
 from components.ai import BasicMonster, ConfusedMonster
 from components.equipment import Equipment
@@ -222,9 +223,37 @@ class Entity:
             dx = path[0][0] - self.x
             dy = path[0][1] - self.y
 
-            if game_map.walkable[path[0][0], path[0][1]] and not get_blocking_entities_at_location(entities, self.x + dx,
-                                                                                                   self.y + dy):
-                self.move(dx, dy)
+            if game_map.walkable[path[0][0], path[0][1]]:
+                #prep for strafing
+                strafe_direction = random.choice([1, -1])
+                
+                #move into path if nothing is blocking
+                if not get_blocking_entities_at_location(entities, self.x + dx, self.y + dy):
+                    self.move(dx, dy)
+
+                #horizontal - strafe into path if nothing is blocking
+                elif dx == 0 or dy == 0:
+                    if dx == 0:
+                        if not get_blocking_entities_at_location(entities, self.x + strafe_direction, self.y + dy):
+                            self.move(strafe_direction, dy)
+                        elif not get_blocking_entities_at_location(entities, self.x - strafe_direction, self.y + dy):
+                            self.move(-strafe_direction, dy)
+                    if dy == 0:
+                        if not get_blocking_entities_at_location(entities, self.x + dx, self.y + strafe_direction):
+                            self.move(dx, strafe_direction)
+                        elif not get_blocking_entities_at_location(entities, self.x + dx, self.y - strafe_direction):
+                            self.move(dx, -strafe_direction)
+
+                #corner - strafe into path if nothing is blocking
+                elif abs(dx) == 1 and abs(dy) == 1:
+                    #strafe x
+                    if strafe_direction > 0:
+                        if not get_blocking_entities_at_location(entities, self.x, self.y + dy):
+                            self.move(0, dy)
+                    #strafe y
+                    elif strafe_direction < 0:
+                        if not get_blocking_entities_at_location(entities, self.x + dx, self.y):
+                            self.move(dx, 0)
 
     def distance(self, x, y):
         return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)

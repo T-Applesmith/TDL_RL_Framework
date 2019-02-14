@@ -1,4 +1,5 @@
 #http://www.roguebasin.com/index.php?title=Roguelike_Tutorial,_using_python3%2Btdl
+#http://rogueliketutorials.com/
 
 import tdl
 #https://python-tcod.readthedocs.io/en/latest/tdl.html
