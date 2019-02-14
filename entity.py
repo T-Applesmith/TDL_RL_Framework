@@ -217,13 +217,19 @@ class Entity:
         self.y += dy
 
     def move_towards(self, target_x, target_y, game_map, entities):
-        path = game_map.compute_path(self.x, self.y, target_x, target_y)
+        walkable_map = game_map
+        #for entity in entities:
+        #    if entity.blocks and not entity == self:
+        #        walkable_map.walkable[entity.x, entity.y] = False
+        #        print('blocking: ({0},{1})'.format(entity.x, entity.y))
+        
+        path = walkable_map.compute_path(self.x, self.y, target_x, target_y)
 
         if path:
             dx = path[0][0] - self.x
             dy = path[0][1] - self.y
 
-            if game_map.walkable[path[0][0], path[0][1]]:
+            if walkable_map.walkable[path[0][0], path[0][1]]:
                 #prep for strafing
                 strafe_direction = random.choice([1, -1])
                 
@@ -234,26 +240,30 @@ class Entity:
                 #horizontal - strafe into path if nothing is blocking
                 elif dx == 0 or dy == 0:
                     if dx == 0:
-                        if not get_blocking_entities_at_location(entities, self.x + strafe_direction, self.y + dy):
+                        if not get_blocking_entities_at_location(entities, self.x + strafe_direction, self.y + dy) and walkable_map.walkable[self.x + strafe_direction, self.y + dy]:
                             self.move(strafe_direction, dy)
-                        elif not get_blocking_entities_at_location(entities, self.x - strafe_direction, self.y + dy):
+                        elif not get_blocking_entities_at_location(entities, self.x - strafe_direction, self.y + dy) and walkable_map.walkable[self.x - strafe_direction, self.y + dy]:
                             self.move(-strafe_direction, dy)
                     if dy == 0:
-                        if not get_blocking_entities_at_location(entities, self.x + dx, self.y + strafe_direction):
+                        if not get_blocking_entities_at_location(entities, self.x + dx, self.y + strafe_direction) and walkable_map.walkable[self.x + dx, self.y + strafe_direction]:
                             self.move(dx, strafe_direction)
-                        elif not get_blocking_entities_at_location(entities, self.x + dx, self.y - strafe_direction):
+                        elif not get_blocking_entities_at_location(entities, self.x + dx, self.y - strafe_direction) and walkable_map.walkable[self.x + dx, self.y - strafe_direction]:
                             self.move(dx, -strafe_direction)
 
                 #corner - strafe into path if nothing is blocking
                 elif abs(dx) == 1 and abs(dy) == 1:
-                    #strafe x
+                    #strafe x first
                     if strafe_direction > 0:
-                        if not get_blocking_entities_at_location(entities, self.x, self.y + dy):
+                        if not get_blocking_entities_at_location(entities, self.x, self.y + dy) and walkable_map.walkable[self.x, self.y + dy]:
                             self.move(0, dy)
-                    #strafe y
-                    elif strafe_direction < 0:
-                        if not get_blocking_entities_at_location(entities, self.x + dx, self.y):
+                        elif not get_blocking_entities_at_location(entities, self.x + dx, self.y) and walkable_map.walkable[self.x + dx, self.y]:
                             self.move(dx, 0)
+                    #strafe y first
+                    elif strafe_direction < 0:
+                        if not get_blocking_entities_at_location(entities, self.x + dx, self.y) and walkable_map.walkable[self.x + dx, self.y]:
+                            self.move(dx, 0)
+                        elif not get_blocking_entities_at_location(entities, self.x, self.y + dy) and walkable_map.walkable[self.x, self.y + dy]:
+                            self.move(0, dy)
 
     def distance(self, x, y):
         return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
