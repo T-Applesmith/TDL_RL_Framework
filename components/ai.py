@@ -11,8 +11,8 @@ class BasicMonster:
 
         if game_map.fov[monster.x, monster.y]:
             if monster.distance_to(target) >= 2:
-                #monster.move_towards(target, game_map, entities)
-                monster.move_astar(target, game_map, entities)
+                monster.move_towards(target, game_map, entities)
+                #monster.move_astar(target, game_map, entities)
 
             elif target.fighter.hp > 0:
                 attack_results = monster.fighter.attack(target)

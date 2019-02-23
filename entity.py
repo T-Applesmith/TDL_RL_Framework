@@ -219,17 +219,13 @@ class Entity:
         self.y += dy
 
     def move_towards(self, target, game_map, entities):
+        self.move_astar(target, game_map, entities)
+
+    def move_backup(self, target, game_map, entities):
         target_x = target.x
         target_y = target.y
-        #print('Recomputing walkable map')
         walkable_map = game_map
 
-        #print('({0}, {1})'.format(self.x, self.y))
-        #for entity in entities:
-        #    if entity.blocks and not entity == self:
-        #        walkable_map.walkable[entity.x, entity.y] = False
-        #        print('blocking: ({0},{1})'.format(entity.x, entity.y))
-        
         path = walkable_map.compute_path(self.x, self.y, target_x, target_y)
 
         if path:
@@ -309,7 +305,7 @@ class Entity:
             # typically used due to path size >= 25
             # noticed that path is sometimes zero - but there is an alternate path? -no issues yet but keep in mind
             print('Cannot A*, using backup pathing algo, path distance: {0}'.format(tcod.path_size(my_path)))
-            self.move_towards(target, game_map, entities)
+            self.move_backup(target, game_map, entities)
 
         # free up memory
         tcod.path_delete(my_path)
