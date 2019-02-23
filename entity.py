@@ -1,6 +1,8 @@
 import math
 import random
 
+import tcod
+
 from components.ai import BasicMonster, ConfusedMonster
 from components.equipment import Equipment
 from components.equippable import Equippable
@@ -216,8 +218,13 @@ class Entity:
         self.x += dx
         self.y += dy
 
-    def move_towards(self, target_x, target_y, game_map, entities):
+    def move_towards(self, target, game_map, entities):
+        target_x = target.x
+        target_y = target.y
+        #print('Recomputing walkable map')
         walkable_map = game_map
+
+        #print('({0}, {1})'.format(self.x, self.y))
         #for entity in entities:
         #    if entity.blocks and not entity == self:
         #        walkable_map.walkable[entity.x, entity.y] = False
@@ -272,6 +279,40 @@ class Entity:
         dx = other.x - self.x
         dy = other.y - self.y
         return math.sqrt(dx ** 2 + dy ** 2)
+
+    def move_astar(self, target, game_map, entities):#self, target_x, target_y, game_map, entities):
+        MAP_WIDTH = game_map.width
+        MAP_HEIGHT = game_map.height
+        fov = tcod.map_new(MAP_WIDTH, MAP_HEIGHT)
+
+        for y1 in range(MAP_HEIGHT):
+            for x1 in range(MAP_WIDTH):
+                #tcod.map_set_properties(fov, x1, y1, not game_map.transparent[x1][y1], not game_map.walkable[x1][y1])
+                tcod.map_set_properties(fov, x1, y1, game_map.transparent[x1][y1], game_map.walkable[x1][y1])
+
+        for entity in entities:
+            if entity.blocks and entity != self and entity != target:
+                tcod.map_set_properties(fov, entity.x, entity.y, True, False)
+
+        my_path = tcod.path_new_using_map(fov, 1.41)
+
+        tcod.path_compute(my_path, self.x, self.y, target.x, target.y)
+
+        if not tcod.path_is_empty(my_path) and tcod.path_size(my_path) < 25:
+            x, y = tcod.path_walk(my_path, True)
+            if x or y:
+                self.x = x
+                self.y = y
+
+        else:
+            # if no paths, use old method
+            # typically used due to path size >= 25
+            # noticed that path is sometimes zero - but there is an alternate path? -no issues yet but keep in mind
+            print('Cannot A*, using backup pathing algo, path distance: {0}'.format(tcod.path_size(my_path)))
+            self.move_towards(target, game_map, entities)
+
+        # free up memory
+        tcod.path_delete(my_path)
 
 
 def get_blocking_entities_at_location(entities, destination_x, destination_y):
