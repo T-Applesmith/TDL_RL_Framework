@@ -158,15 +158,28 @@ def character_screen(root_console, player, character_screen_width, character_scr
 
 
 def keybindings_screen(root_console, header, menu_width, menu_height, screen_width, screen_height):
-    from input_handlers import handle_player_turn_keys
     import tdl
 
     window = tdl.Console(menu_width, menu_height)
-    action_number = 2
-
+    
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
     window.draw_str(0, 0, '{0}'.format(header))
 
+    keybindings_full_uninteractive_list(window, menu_height)
+
+    x = screen_width // 2 - menu_width // 2
+    y = screen_height // 2 - menu_height // 2
+    root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
+
+def keybindings_rebind_list(window, menu_height):
+    window.draw_str(0, 1, 'h: left')
+    
+
+def keybindings_full_uninteractive_list(window, menu_height):
+    """Lists typical key inputs and their default bindings"""
+    from input_handlers import handle_player_turn_keys
+    
+    action_number = 2
     #space? starts at 32
     for i in range(32, 126):
         event = tdl.event.KeyDown(key=chr(i),char=chr(i))
@@ -177,10 +190,6 @@ def keybindings_screen(root_console, header, menu_width, menu_height, screen_wid
 
         if action_number >= menu_height:
             break
-
-    x = screen_width // 2 - menu_width // 2
-    y = screen_height // 2 - menu_height // 2
-    root_console.blit(window, x, y, menu_width, menu_height, 0, 0)    
 
 
 def escape_menu(root_console, header, menu_width, menu_height, screen_width, screen_height):

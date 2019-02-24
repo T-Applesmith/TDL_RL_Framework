@@ -406,7 +406,11 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
 def main():
     constants = get_constants()
-    config = read_config()
+    
+    update_configs, config_dict = read_config()
+    while update_configs:
+        write_config(config_dict)
+        update_configs, config_dict = read_config()
 
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
@@ -425,7 +429,7 @@ def main():
 
     main_menu_background_image = image_load('menu_background.png')
 
-    tdl.set_fps(int(config['fps_cap'])) #Let's not be google chrome
+    tdl.set_fps(int(config_dict['fps_cap'])) #Let's not be google chrome
 
     while not tdl.event.is_window_closed():
         for event in tdl.event.get():
@@ -465,14 +469,14 @@ def main():
                 except FileNotFoundError:
                     show_load_error_message = True
             elif exit_game:
-                write_config(config)
+                write_config(config_dict)
                 break
 
         else:
             root_console.clear()
             con.clear()
             panel.clear()
-            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config)
+            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config_dict)
 
             show_main_menu = True
 
