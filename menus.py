@@ -283,7 +283,6 @@ def menu_text(window, x, y, menu_height, text_array, truncation=True, tab_when_w
         if y < menu_height:
             
             if truncation:
-                
                 # if text is too long, truncate it
                 loop_str_print_exception = True
                 while(loop_str_print_exception):
@@ -299,7 +298,7 @@ def menu_text(window, x, y, menu_height, text_array, truncation=True, tab_when_w
                             pass
                         
                     except tdl.TDLError as err:
-                        
+                        # this is the bit that truncates
                         print("tdl.TDLError: {0}: {1}".format(err, text))
                         loop_str_print_exception = True
                         text_len = len(text)
