@@ -157,7 +157,7 @@ def character_screen(root_console, player, character_screen_width, character_scr
     root_console.blit(window, x, y, character_screen_width, character_screen_height, 0, 0)
 
 
-def keybindings_screen(root_console, header, menu_width, menu_height, screen_width, screen_height):
+def keybindings_screen(root_console, header, menu_width, menu_height, screen_width, screen_height, config):
     import tdl
 
     window = tdl.Console(menu_width, menu_height)
@@ -165,16 +165,39 @@ def keybindings_screen(root_console, header, menu_width, menu_height, screen_wid
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
     window.draw_str(0, 0, '{0}'.format(header))
 
-    keybindings_full_uninteractive_list(window, menu_height)
+    if config['allow_keybinding'] in ['True', 'TRUE']:
+        keybindings_rebind_list(window, menu_height, config)
+    elif config['allow_keybinding'] in ['False', 'FALSE']:
+        keybindings_full_uninteractive_list(window, menu_height)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
     root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
 
-def keybindings_rebind_list(window, menu_height):
-    window.draw_str(0, 1, 'h: left')
+def keybindings_rebind_list(window, menu_height, config):
+    keybinding_screen_array = ['Movement',\
+                               '   wait:        {0}'.format(config['key_wait']),\
+                               '   north:       {0}'.format(config['key_north']),\
+                               '   northeast:   {0}'.format(config['key_northeast']),\
+                               '   east:        {0}'.format(config['key_east']),\
+                               '   southeast:   {0}'.format(config['key_southeast']),\
+                               '   south:       {0}'.format(config['key_south']),\
+                               '   southwest:   {0}'.format(config['key_southwest']),\
+                               '   west:        {0}'.format(config['key_west']),\
+                               '   northwest:   {0}'.format(config['key_northwest']),\
+                               'Actions',\
+                               '   pickup item: {0}'.format(config['key_pickup']),\
+                               '   drop item:   {0}'.format(config['key_drop']),\
+                               'Menus',\
+                               '   inventory:   {0}'.format(config['key_inventory']),\
+                               '   character:   {0}'.format(config['key_character_menu']),\
+                               '   equipment:   {0}'.format(config['key_equipment']),\
+                               '   help:        {0}'.format(config['key_help']),\
+                               'Interface (Unbindable)',\
+                               '   return/escape: ESC',\
+                               '   fullscrren:    alt+Enter']
+    menu_text(window, 0, 1, menu_height, keybinding_screen_array)
     
-
 def keybindings_full_uninteractive_list(window, menu_height):
     """Lists typical key inputs and their default bindings"""
     from input_handlers import handle_player_turn_keys
@@ -231,7 +254,8 @@ def help_screen(root_console, header, menu_width, menu_height, screen_width, scr
                          '   or to quickly exit menus.',\
                          'The Keybindings Menu shows available actions during gameplay.',\
                          '   (It will be cleaned up in the future)',\
-                         '   move {1, 0} means move right one and up zero.'] 
+                         '   move {1, 0} means move right one and up zero.',\
+                         'Walk into enimies to attack with your weapon.'] 
                          
     menu_text(window, 0, 1, menu_height, help_screen_array)
 

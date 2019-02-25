@@ -1,10 +1,10 @@
 from game_states import GameStates
 
 
-def handle_keys(user_input, game_state):
+def handle_keys(user_input, game_state, config_dict):
     if user_input:
         if game_state == GameStates.PLAYERS_TURN:
-            return handle_player_turn_keys(user_input)
+            return handle_player_turn_keys(user_input, config_dict)
         elif game_state == GameStates.PLAYER_DEAD:
             return handle_player_dead_keys(user_input)
         elif game_state == GameStates.TARGETING:
@@ -18,7 +18,7 @@ def handle_keys(user_input, game_state):
         elif game_state == GameStates.EQUIPMENT_MENU:
             return handle_equipment_menu(user_input)
         elif game_state == GameStates.KEYBINDINGS_MENU:
-            return handle_keybindings_menu(user_input)
+            return handle_keybindings_menu(user_input, config_dict)
         elif game_state == GameStates.ESCAPE_MENU:
             return handle_escape_menu(user_input)
         elif game_state == GameStates.HELP_SCREEN:
@@ -29,56 +29,73 @@ def handle_keys(user_input, game_state):
     return {}
 
 
-def handle_player_turn_keys(user_input):
+def handle_player_turn_keys(user_input, config_dict):
     try:
-        key_char = user_input.char
+        key_char = user_input.text
     except AttributeError:
         print('ERROR CAUGHT: AttributeError: input_handlers.handle_player_turn_keys')
         key_char = chr(user_input)
         user_input = chr(user_input)
 
     # Movement keys
-    if user_input.key == 'UP' or key_char == 'k':
+    if user_input.key == 'UP' or key_char == config_dict.get('key_north'):
+        #if user_input.key == 'UP' or key_char == 'k':
         return {'move': (0, -1)}
-    elif user_input.key == 'DOWN' or key_char == 'j':
+    elif user_input.key == 'DOWN' or key_char == config_dict.get('key_south'):
+        #elif user_input.key == 'DOWN' or key_char == 'j':
         return {'move': (0, 1)}
-    elif user_input.key == 'LEFT' or key_char == 'h':
+    elif user_input.key == 'LEFT' or key_char == config_dict.get('key_west'):
+        #elif user_input.key == 'LEFT' or key_char == 'h':
         return {'move': (-1, 0)}
-    elif user_input.key == 'RIGHT' or key_char == 'l':
+    elif user_input.key == 'RIGHT' or key_char == config_dict.get('key_east'):
+        #elif user_input.key == 'RIGHT' or key_char == 'l':
         return {'move': (1, 0)}
-    elif key_char == 'y':
+    elif key_char == config_dict.get('key_northwest'):
+        #elif key_char == 'y':
         return {'move': (-1, -1)}
-    elif key_char == 'u':
+    elif key_char == config_dict.get('key_northeast'):
+        #elif key_char == 'u':
         return {'move': (1, -1)}
-    elif key_char == 'b':
+    elif key_char == config_dict.get('key_southwest'):
+        #elif key_char == 'b':
         return {'move': (-1, 1)}
-    elif key_char == 'n':
+    elif key_char == config_dict.get('key_southeast'):
+        #elif key_char == 'n':
         return {'move': (1, 1)}
-    elif key_char == 'z':
+    elif key_char == config_dict.get('key_wait'):
+        #elif key_char == 'z':
         return {'wait': True}
 
-    if key_char == 'g':
+    if key_char == config_dict.get('key_pickup'):
+        #if key_char == 'g':
         return {'pickup': True}
 
-    elif key_char == 'i':
+    elif key_char == config_dict.get('key_inventory'):
+        #elif key_char == 'i':
         return {'show_inventory': True}
 
-    elif key_char == 'd':
+    elif key_char == config_dict.get('key_drop'):
+        #elif key_char == 'd':
         return {'drop_inventory': True}
 
-    elif key_char == '.' and user_input.shift:
-        return {'take_stairs': True}
+    elif key_char == config_dict.get('key_down_stairs'):
+        #elif key_char == '>':
+        return {'down_stairs': True}
 
-    elif key_char == 'c':
+    elif key_char == config_dict.get('key_character_menu'):
+        #elif key_char == 'c':
         return {'show_character_screen': True}
 
-    elif key_char == 'e':
+    elif key_char == config_dict.get('key_equipment'):
+        #elif key_char == 'e':
         return {'show_equipment_menu': True}
 
-    elif key_char == '?':
+    elif key_char == config_dict.get('key_help'):
+        #elif key_char == '?':
         #Open the help_screen
         return {'show_help_screen': True}
 
+    # CANNOT BE RE-BOUND
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen
         return {'fullscreen': True}
@@ -97,9 +114,12 @@ def handle_targeting_keys(user_input):
     return {}
 
 
-def handle_keybindings_menu(user_input):
+def handle_keybindings_menu(user_input, config_dict):
     if user_input.key == 'ESCAPE':
         return {'return_to_game': True}
+
+    if config_dict['allow_keybinding'] in ['True', 'TRUE']:
+        pass
 
     return {}
 

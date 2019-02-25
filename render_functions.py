@@ -118,7 +118,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
         escape_menu(root_console, 'ESCAPE MENU', 30, 10, screen_width, screen_height)
 
     elif game_state == GameStates.KEYBINDINGS_MENU:
-        keybindings_screen(root_console, 'KEYBINDINGS (PROOF OF CONCEPT)', 50, 40, screen_width, screen_height)
+        keybindings_screen(root_console, 'KEYBINDINGS (PROOF OF CONCEPT)', 50, 40, screen_width, screen_height, config)
 
     elif game_state == GameStates.OPTIONS_MENU:
         options_menu(root_console, 'OPTIONS (PROOF OF CONCEPT)', 30, 10, screen_width, screen_height, config)

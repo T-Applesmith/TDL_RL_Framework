@@ -218,12 +218,12 @@ class Entity:
         self.x += dx
         self.y += dy
 
-    def move_towards(self, target, game_map, entities):
-        self.move_astar(target, game_map, entities)
+    def move_towards(self, game_map, entities, **kwargs):
+        self.move_astar(game_map, entities, **kwargs)
 
-    def move_backup(self, target, game_map, entities):
-        target_x = target.x
-        target_y = target.y
+    def move_backup(self, game_map, entities, **kwargs):
+        target_x = kwargs.get('target_x')
+        target_y = kwargs.get('target_y')
         walkable_map = game_map
 
         path = walkable_map.compute_path(self.x, self.y, target_x, target_y)
@@ -276,10 +276,18 @@ class Entity:
         dy = other.y - self.y
         return math.sqrt(dx ** 2 + dy ** 2)
 
-    def move_astar(self, target, game_map, entities):#self, target_x, target_y, game_map, entities):
+    def move_astar(self, game_map, entities, **kwargs):#self, target_x, target_y, game_map, entities):
         MAP_WIDTH = game_map.width
         MAP_HEIGHT = game_map.height
         fov = tcod.map_new(MAP_WIDTH, MAP_HEIGHT)
+
+        target = kwargs.get('target')
+        if target:
+            target_x = target.x
+            target_y = target.y
+        else:
+            target_x = kwargs.get('target_x')
+            target_y = kwargs.get('target_y')
 
         for y1 in range(MAP_HEIGHT):
             for x1 in range(MAP_WIDTH):
@@ -292,7 +300,7 @@ class Entity:
 
         my_path = tcod.path_new_using_map(fov, 1.41)
 
-        tcod.path_compute(my_path, self.x, self.y, target.x, target.y)
+        tcod.path_compute(my_path, self.x, self.y, target_x, target_y)
 
         if not tcod.path_is_empty(my_path) and tcod.path_size(my_path) < 25:
             x, y = tcod.path_walk(my_path, True)
@@ -305,7 +313,7 @@ class Entity:
             # typically used due to path size >= 25
             # noticed that path is sometimes zero - but there is an alternate path? -no issues yet but keep in mind
             print('Cannot A*, using backup pathing algo, path distance: {0}'.format(tcod.path_size(my_path)))
-            self.move_backup(target, game_map, entities)
+            self.move_backup(game_map, entities, target_x=target_x, target_y=target_y)
 
         # free up memory
         tcod.path_delete(my_path)

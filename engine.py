@@ -62,7 +62,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if not (user_input or user_mouse_input):
             continue
 
-        action = handle_keys(user_input, game_state)
+        action = handle_keys(user_input, game_state, config)
         mouse_action = handle_mouse(user_mouse_input)
 
         move = action.get('move')
@@ -72,7 +72,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         drop_inventory = action.get('drop_inventory')
         inventory_index = action.get('inventory_index')
         escape_index = action.get('escape_index')
-        take_stairs = action.get('take_stairs')
+        down_stairs = action.get('down_stairs')
         level_up = action.get('level_up')
         show_character_screen = action.get('show_character_screen')
         show_equipment_menu = action.get('show_equipment_menu')
@@ -141,7 +141,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if escape_index is not None:
             pass
 
-        if take_stairs and game_state == GameStates.PLAYERS_TURN:
+        if down_stairs and game_state == GameStates.PLAYERS_TURN:
             for entity in entities:
                 if entity.stairs and entity.x == player.x and entity.y == player.y:
                     game_map, entities = next_floor(player, message_log, entity.stairs.floor, constants)
@@ -406,11 +406,11 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
 def main():
     constants = get_constants()
-    
-    update_configs, config_dict = read_config()
-    while update_configs:
-        write_config(config_dict)
-        update_configs, config_dict = read_config()
+
+    # magic config load sequence to load and repair bad configs
+    config_dict = read_config()
+    write_config(config_dict)
+    config_dict = read_config() 
 
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
@@ -429,7 +429,7 @@ def main():
 
     main_menu_background_image = image_load('menu_background.png')
 
-    tdl.set_fps(int(config_dict['fps_cap'])) #Let's not be google chrome
+    tdl.set_fps(int(config_dict['fps_cap'])) #Let's not be chrome
 
     while not tdl.event.is_window_closed():
         for event in tdl.event.get():
