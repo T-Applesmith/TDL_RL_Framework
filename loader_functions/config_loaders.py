@@ -120,6 +120,11 @@ def write_config(config_dict):
         config['DEV']['allow_keybinding'] = config_dict['allow_keybinding']
     else:
         config['DEV']['allow_keybinding'] = 'False'
+
+    if config_dict.get('verbose'):
+        config['DEV']['verbose'] = config_dict['verbose']
+    else:
+        config['DEV']['verbose'] = 'False'
         
     # write to file
     with open('config.ini', 'w') as configfile:

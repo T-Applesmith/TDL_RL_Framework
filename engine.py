@@ -14,6 +14,7 @@ from loader_functions.config_loaders import write_config, read_config
 from utils.map_utils import next_floor
 
 from death_functions import kill_monster, kill_player
+from dev.dev_print import print_dev
 from entity import get_blocking_entities_at_location
 from game_messages import Message
 from game_states import GameStates
@@ -23,6 +24,7 @@ from render_functions import clear_all, render_all
 
 
 def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config):
+    print_dev('======================\nBeginning to play game\n======================', config)
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
     fov_recompute = True
@@ -193,7 +195,6 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 player_turn_results.extend(player.equipment.toggle_equip(equipment_selected))
 
         if left_click:
-            #print('''constants['screen_height']: {0}'''.format(constants['screen_height']))
             if game_state == GameStates.TARGETING:
                 target_x, target_y = left_click
 
@@ -212,27 +213,27 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                     elif target_y == 24:
                         game_state = GameStates.HELP_SCREEN
                     elif target_y == 25:
-                        exit = True
+                        exit = Trues
                 else:
                     print('''MOUSE DISABLED: constants['screen_height'] changed''')
 
             elif game_state == GameStates.EQUIPMENT_MENU:
                 target_x, target_y = left_click
-                print('{0}, {1}'.format(target_x, target_y))
+                print_dev('{0}, {1}'.format(target_x, target_y), config)
 
             elif game_state == GameStates.SHOW_INVENTORY:
                 #inventory adjusts, figure this out
                 target_x, target_y = left_click
-                print('{0}, {1}'.format(target_x, target_y))
+                print_dev('{0}, {1}'.format(target_x, target_y), config)
 
             elif game_state == GameStates.DROP_INVENTORY:
                 #inventory adjusts, figure this out
                 target_x, target_y = left_click
-                print('{0}, {1}'.format(target_x, target_y))
+                print_dev('{0}, {1}'.format(target_x, target_y), config)
 
             elif game_state == GameStates.PLAYERS_TURN:
                 target_x, target_y = left_click
-                print('{0}, {1}'.format(target_x, target_y))
+                print_dev('{0}, {1}'.format(target_x, target_y), config)
 
             elif game_state == GameStates.OPTIONS_MENU:
                 #update configs
@@ -240,7 +241,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 tdl.set_fps(int(config['fps_cap']))
                 
                 target_x, target_y = left_click
-                print('{0}, {1}'.format(target_x, target_y))
+                print_dev('{0}, {1}'.format(target_x, target_y), config)
                 if target_x < 51 and target_x > 25:
                     if target_y == 26:
                         if config['fps_display'] == 'False':
@@ -281,14 +282,14 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if exit:
             if game_state == GameStates.ESCAPE_MENU:
                 game_state = previous_game_state
-                print('\nBeginning save...')
-                print('player: '+str(player))
-                print('entities: '+str(entities))
-                print('game map: '+str(game_map))
-                print('message log: '+str(message_log))
-                print('game_state: '+str(game_state))
-                save_game(player, entities, game_map, message_log, game_state)
-                print('==============\nSave complete!\n==============\n')
+                print_dev('\nBeginning save...', config)
+                print_dev('player: '+str(player), config)
+                print_dev('entities: '+str(entities), config)
+                print_dev('game map: '+str(game_map), config)
+                print_dev('message log: '+str(message_log), config)
+                print_dev('game_state: '+str(game_state), config)
+                save_game(player, entities, game_map, message_log, game_state, config)
+                print_dev('==============\nSave complete!\n==============\n', config)
                 return True
             else:
                 previous_game_state = game_state
@@ -314,7 +315,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             if dead_entity:
                 if dead_entity == player:
                     message, game_state = kill_player(dead_entity, constants['colors'])
-                    print('The game doesn\'t hate you, I hate you. My name is Sam Fehringer, and this is MY game.')
+                    print('The game doesn\'t hate you, I hate you. My name is Tiberius Applesmith, and this is MY game.')
                 else:
                     message = kill_monster(dead_entity, constants['colors'])
 
@@ -464,7 +465,7 @@ def main():
                 show_main_menu = False
             elif load_saved_game:
                 try:
-                    player, entities, game_map, message_log, game_state = load_game()
+                    player, entities, game_map, message_log, game_state = load_game(config_dict)
                     show_main_menu = False
                 except FileNotFoundError:
                     show_load_error_message = True
