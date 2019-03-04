@@ -14,6 +14,7 @@ from loader_functions.config_loaders import write_config, read_config
 from utils.map_utils import next_floor
 
 from death_functions import kill_monster, kill_player
+from dev.dev_console import dev_powers
 from dev.dev_print import print_dev
 from entity import get_blocking_entities_at_location
 from game_messages import Message
@@ -34,6 +35,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
     previous_game_state = game_state
 
     targeting_item = None
+    dev_console_input = ''
 
     while not tdl.event.is_window_closed():
         if fov_recompute:
@@ -41,7 +43,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                                  light_walls=constants['fov_light_walls'])
 
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
-                   mouse_coordinates, game_state, constants, config)
+                   mouse_coordinates, game_state, constants, config, dev_console_input)
         tdl.flush()
 
         clear_all(con, entities)
@@ -64,6 +66,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if not (user_input or user_mouse_input):
             continue
 
+        player_turn_results = []
+
         action = handle_keys(user_input, game_state, config)
         mouse_action = handle_mouse(user_mouse_input)
 
@@ -81,15 +85,31 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         show_keybindings_menu = action.get('show_keybindings_menu')
         show_options_menu = action.get('show_options_menu')
         show_help_screen = action.get('show_help_screen')
+        show_dev_console = action.get('show_dev_console')
         equipment_index = action.get('equipment_index')
         return_to_game = action.get('return_to_game')
         exit = action.get('exit')
         fullscreen = action.get('fullscreen')
 
+        # dev console input
+        dev_console_keypress = action.get('dev_console_keypress')
+        dev_console_backspace = action.get('dev_console_backspace')
+        dev_console_submit = action.get('dev_console_submit')
+
+        # handle dev console
+        print_dev('dev_console_keypress:{0}, console_input:{1}'.format(dev_console_keypress,dev_console_input), config)
+        if dev_console_input == None or show_dev_console:
+            dev_console_input = ''
+        elif dev_console_keypress and len(dev_console_input) < 55:
+            dev_console_input = dev_console_input + str(dev_console_keypress)
+        elif dev_console_backspace:
+            dev_console_input = dev_console_input[:len(dev_console_input)-1]
+        elif dev_console_submit:
+            player_turn_results.extend(dev_powers(dev_console_input, entities, constants))
+            dev_console_input = ''
+
         left_click = mouse_action.get('left_click')
         right_click = mouse_action.get('right_click')
-
-        player_turn_results = []
 
         if move and game_state == GameStates.PLAYERS_TURN:
             dx, dy = move
@@ -182,6 +202,10 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if show_options_menu:
             game_state = GameStates.OPTIONS_MENU
 
+        if show_dev_console:
+            previous_game_state = game_state
+            game_state = GameStates.DEV_CONSOLE
+
         if equipment_index is not None and previous_game_state != GameStates.PLAYER_DEAD:
             if equipment_index == 0:
                 equipment_selected = player.equipment.main_hand
@@ -268,7 +292,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if return_to_game:
             if game_state == GameStates.ESCAPE_MENU:
                 game_state = previous_game_state
-            elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU):
+            elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU,\
+                                GameStates.DEV_CONSOLE):
                 game_state = previous_game_state
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
@@ -471,6 +496,7 @@ def main():
                     show_load_error_message = True
             elif exit_game:
                 write_config(config_dict)
+                root_console.__del__() # this closes the console + garbage collects
                 break
 
         else:

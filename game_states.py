@@ -15,3 +15,4 @@ class GameStates(Enum):
     ESCAPE_MENU = 11
     HELP_SCREEN = 12
     OPTIONS_MENU = 13
+    DEV_CONSOLE = 14

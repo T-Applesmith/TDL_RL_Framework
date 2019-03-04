@@ -1,5 +1,6 @@
 import tdl
 
+from dev.dev_console import dev_console
 from enum import Enum
 from game_states import GameStates
 from menus import character_screen, inventory_menu, level_up_menu, equipment_menu, escape_menu, keybindings_screen,\
@@ -21,6 +22,8 @@ def get_names_under_mouse(mouse_coordinates, entities, game_map):
     names = [entity.name for entity in entities
              if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y]]
     names = ', '.join(names)
+
+    names = '[{0},{1}] {2}'.format(x, y, names)
 
     return names.capitalize()
 
@@ -44,7 +47,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
 
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates,
-               game_state, constants, config):
+               game_state, constants, config, dev_console_input):
     screen_width = constants['screen_width']
     screen_height = constants['screen_height']
     bar_width = constants['bar_width']
@@ -126,6 +129,9 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
     elif game_state == GameStates.HELP_SCREEN:
         help_screen(root_console, 'HELP (PROOF OF CONCEPT)', 60, 40, screen_width, screen_height)
 
+    elif game_state == GameStates.DEV_CONSOLE:
+        dev_console(con, root_console, '~:', dev_console_input, 60, 1, screen_width, screen_height, config) 
+        
     if config['fps_display'] in ['True', 'TRUE', 'true']:
         fps_counter(root_console, constants['screen_width'])     
 

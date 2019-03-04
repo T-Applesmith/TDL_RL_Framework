@@ -7,15 +7,27 @@ def heal(*args, **kwargs):
     entity = args[0]
     colors = args[1]
     amount = kwargs.get('amount')
+    dev = kwargs.get('dev')
 
     results = []
 
     if entity.fighter.hp == entity.fighter.max_hp:
-        results.append({'consumed': False, 'message': Message('You are already at full health', colors.get('yellow'))})
+        if entity.name.lower() == 'player':
+            results.append({'consumed': False, 'message': Message('You are already at full health'.format(entity.name), colors.get('yellow'))})
+        else:
+            results.append({'consumed': False, 'message': Message('{0} is already at full health'.format(entity.name), colors.get('yellow'))})
     else:
         entity.fighter.heal(amount)
-        results.append({'consumed': True, 'message': Message('Your wounds start to feel better!', colors.get('green'))})
+        if entity.name.lower() == 'player':
+            results.append({'message': Message('Your wounds start to feel better!', colors.get('green'))})
+        else:
+            results.append({'message': Message('The {0}\'s wounds start to feel better!'.format(entity.name), colors.get('green'))})\
 
+        if dev:
+            results.append({'consumed': False})
+        else:
+            results.append({'consumed': True})
+            
     return results
 
 

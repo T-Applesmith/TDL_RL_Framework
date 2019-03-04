@@ -112,6 +112,10 @@ def write_config(config_dict):
     else:
         config['KEYBINDINGS']['key_help'] = '?'
 
+    if config_dict.get('key_dev_console') and (config_dict['allow_keybinding'] in ['True', 'TRUE']):
+        config['KEYBINDINGS']['key_dev_console'] = config_dict['key_dev_console']
+    else:
+        config['KEYBINDINGS']['key_dev_console'] = '~'
       
     # Development Tools
     config['DEV'] = {}
