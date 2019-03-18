@@ -105,7 +105,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         elif dev_console_backspace:
             dev_console_input = dev_console_input[:len(dev_console_input)-1]
         elif dev_console_submit:
-            player_turn_results.extend(dev_powers(dev_console_input, entities, constants))
+            player_turn_results.extend(dev_powers(dev_console_input, entities, message_log, constants))
             dev_console_input = ''
 
         left_click = mouse_action.get('left_click')

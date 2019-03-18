@@ -1,6 +1,7 @@
 import tdl, tcod
 
 
+from game_messages import Message
 from item_functions import heal
 from menus import menu
 
@@ -16,7 +17,13 @@ def dev_console(con, root_console, header, content, menu_width, menu_height, scr
     root_console.blit(window, 0, 0, menu_width, menu_height, 0, 0)
 
 
-def dev_powers(string, entities, constants):
+def dev_powers(string, entities, message_log, constants):
+    '''
+    This translates a 'string' provided by the dev_console into an action
+
+    Heal - positive number heals target, negative damages
+    Teleport - moves entity at A to B
+    '''
     colors = constants['colors']
     results = []
     
@@ -25,8 +32,11 @@ def dev_powers(string, entities, constants):
 
     function = args[0]
 
+    #Dev Powers
     print('{0}'.format(function.capitalize()))
+    
     if function.lower() in ['heal']:
+        #Heal/Damage Target
         target_x, target_y = find_target_location(args[1])
         heal_amount = int(args[2])
 
@@ -38,6 +48,19 @@ def dev_powers(string, entities, constants):
                     results = heal(entity, colors, amount=heal_amount, dev=True)
                 elif heal_amount < 0:
                     results = entity.fighter.take_damage(abs(heal_amount))
+
+    elif function.lower() in ['teleport']:
+        #Move Entities from Location A to B
+        target_x1, target_y1 = find_target_location(args[1])
+        target_x2, target_y2 = find_target_location(args[2])
+
+        for entity in entities:
+            if entity.x == target_x1 and entity.y == target_y1:
+                entity.x = target_x2
+                entity.y = target_y2
+
+                message_log.add_message(Message('{0} has teleported to [{1},{2}].'.format(entity.name, target_x2, target_y2), constants['colors'].get('white')))
+                results = []
 
     return results                    
 
