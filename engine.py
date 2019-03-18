@@ -105,16 +105,21 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         elif dev_console_backspace:
             dev_console_input = dev_console_input[:len(dev_console_input)-1]
         elif dev_console_submit:
-            player_turn_results.extend(dev_powers(dev_console_input, entities, message_log, constants))
+            player_turn_results.extend(dev_powers(dev_console_input, entities, message_log, constants, config))
             dev_console_input = ''
 
         left_click = mouse_action.get('left_click')
         right_click = mouse_action.get('right_click')
 
-        if move and game_state == GameStates.PLAYERS_TURN:
-            dx, dy = move
-            destination_x = player.x + dx
-            destination_y = player.y + dy
+        if (move or (left_click and ((abs(left_click[0] - player.x) <= 1) and (abs(left_click[1] - player.y) <= 1)))) and game_state == GameStates.PLAYERS_TURN:
+            if move:
+                dx, dy = move
+                destination_x = player.x + dx
+                destination_y = player.y + dy
+            elif left_click:
+                dx = left_click[0] - player.x
+                dy = left_click[1] - player.y
+                destination_x, destination_y = left_click
 
             if game_map.walkable[destination_x, destination_y]:
                 target = get_blocking_entities_at_location(entities, destination_x, destination_y)
@@ -202,8 +207,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if show_options_menu:
             game_state = GameStates.OPTIONS_MENU
 
-        if show_dev_console:
-            previous_game_state = game_state
+        if show_dev_console and GameStates.PLAYERS_TURN:
+            #previous_game_state = game_state
             game_state = GameStates.DEV_CONSOLE
 
         if equipment_index is not None and previous_game_state != GameStates.PLAYER_DEAD:
@@ -292,11 +297,12 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         if return_to_game:
             if game_state == GameStates.ESCAPE_MENU:
                 game_state = previous_game_state
-            elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU,\
-                                GameStates.DEV_CONSOLE):
+            elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU):
                 game_state = previous_game_state
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
+            elif game_state == GameStates.DEV_CONSOLE:
+                game_state = GameStates.PLAYERS_TURN
             elif game_state in (GameStates.KEYBINDINGS_MENU, GameStates.OPTIONS_MENU, GameStates.HELP_SCREEN):
                 #for those that go to and from the Escape_Menu
                 game_state = GameStates.ESCAPE_MENU

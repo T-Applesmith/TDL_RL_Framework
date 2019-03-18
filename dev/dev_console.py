@@ -1,6 +1,7 @@
 import tdl, tcod
 
 
+from dev.dev_print import print_dev
 from game_messages import Message
 from item_functions import heal
 from menus import menu
@@ -17,7 +18,7 @@ def dev_console(con, root_console, header, content, menu_width, menu_height, scr
     root_console.blit(window, 0, 0, menu_width, menu_height, 0, 0)
 
 
-def dev_powers(string, entities, message_log, constants):
+def dev_powers(string, entities, message_log, constants, config):
     '''
     This translates a 'string' provided by the dev_console into an action
 
@@ -59,7 +60,8 @@ def dev_powers(string, entities, message_log, constants):
                 entity.x = target_x2
                 entity.y = target_y2
 
-                message_log.add_message(Message('{0} has teleported to [{1},{2}].'.format(entity.name, target_x2, target_y2), constants['colors'].get('white')))
+                print_dev('DEV: {0} has teleported to [{1},{2}].'.format(entity.name, target_x2, target_y2), config)
+                message_log.add_message(Message('DEV: {0} has teleported to [{1},{2}].'.format(entity.name, target_x2, target_y2), constants['colors'].get('white')))
                 results = []
 
     return results                    
