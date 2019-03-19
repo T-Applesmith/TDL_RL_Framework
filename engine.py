@@ -59,11 +59,13 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             elif event.type == 'MOUSEDOWN':
                 user_mouse_input = event
                 break
+            
         else:
             user_input = None
             user_mouse_input = None
 
         if not (user_input or user_mouse_input):
+            #skips everything else if no input
             continue
 
         player_turn_results = []
@@ -110,6 +112,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
         left_click = mouse_action.get('left_click')
         right_click = mouse_action.get('right_click')
+        message_log_up = mouse_action.get('message_log_up')
+        message_log_down = mouse_action.get('message_log_down')
 
         if (move or (left_click and ((abs(left_click[0] - player.x) <= 1) and (abs(left_click[1] - player.y) <= 1)))) and game_state == GameStates.PLAYERS_TURN:
             if move:
@@ -242,7 +246,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                     elif target_y == 24:
                         game_state = GameStates.HELP_SCREEN
                     elif target_y == 25:
-                        exit = Trues
+                        exit = True
                 else:
                     print('''MOUSE DISABLED: constants['screen_height'] changed''')
 
@@ -309,6 +313,11 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             else:
                 previous_game_state = game_state
                 game_state = GameStates.ESCAPE_MENU
+
+        if message_log_up:
+            message_log.index_message(1)
+        if message_log_down:
+            message_log.index_message(-1)
 
         if exit:
             if game_state == GameStates.ESCAPE_MENU:

@@ -195,6 +195,7 @@ def keybindings_rebind_list(window, menu_height, config):
                                '   help:        {0}'.format(config['key_help']),\
                                'Interface (Unbindable)',\
                                '   return/escape: ESC',\
+                               '   scroll log:    mousewheel up/down',\
                                '   fullscrren:    alt+Enter']
     menu_text(window, 0, 1, menu_height, keybinding_screen_array)
     

@@ -282,5 +282,11 @@ def handle_mouse(mouse_event):
             return {'left_click': (x, y)}
         elif mouse_event.button == 'RIGHT':
             return {'right_click': (x, y)}
+        elif mouse_event.button == 'SCROLLUP':
+            #Scroll message log
+            return {'message_log_up': True}
+        elif mouse_event.button == 'SCROLLDOWN':
+            #Scroll message log
+            return {'message_log_down': True}
 
     return {}

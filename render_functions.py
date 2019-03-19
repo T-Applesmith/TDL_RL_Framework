@@ -87,8 +87,12 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
     # Print the game messages, one line at a time
     y = 1
+    dy = 0
     for message in message_log.messages:
-        panel.draw_str(message_log.x, y, message.text, bg=None, fg=message.color)
+        #print('{0}:{1}'.format(y, message_log.index))
+        if dy < 6 and (y >= message_log.index and message_log.index + 6 > y):
+            panel.draw_str(message_log.x, dy, '{0}'.format(message.text), bg=None, fg=message.color)
+            dy += 1
         y += 1
 
     render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp,
