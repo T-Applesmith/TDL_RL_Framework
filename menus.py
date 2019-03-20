@@ -188,6 +188,7 @@ def keybindings_rebind_list(window, menu_height, config):
                                'Actions',\
                                '   pickup item: {0}'.format(config['key_pickup']),\
                                '   drop item:   {0}'.format(config['key_drop']),\
+                               '   look:        {0}'.format(config['key_look']),\
                                'Menus',\
                                '   inventory:   {0}'.format(config['key_inventory']),\
                                '   character:   {0}'.format(config['key_character_menu']),\
@@ -273,6 +274,12 @@ def fps_counter(root_console, screen_width):
     root_console.blit(window, screen_width-7, 0, width, height, 0, 0)
     
 
+def look_box(root_console, description, width, screen_width, screen_height):
+    window = tdl.Console(width, 7)
+    if description:
+        window.draw_str(0, 0, description)
+    root_console.blit(window, 0, screen_height-7, width, 0, 0, 0)
+    
 
 def message_box(con, root_console, header, width, screen_width, screen_height):
     menu(con, root_console, header, [], width, screen_width, screen_height)

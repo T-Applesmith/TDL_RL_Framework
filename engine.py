@@ -82,6 +82,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         escape_index = action.get('escape_index')
         down_stairs = action.get('down_stairs')
         level_up = action.get('level_up')
+        look = action.get('look')
+        
         show_character_screen = action.get('show_character_screen')
         show_equipment_menu = action.get('show_equipment_menu')
         show_keybindings_menu = action.get('show_keybindings_menu')
@@ -194,6 +196,10 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
             game_state = previous_game_state
 
+        if look:
+            previous_game_state = game_state
+            game_state = GameStates.LOOK
+
         if show_character_screen:
             previous_game_state = game_state
             game_state = GameStates.CHARACTER_SCREEN
@@ -302,6 +308,9 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             if game_state == GameStates.ESCAPE_MENU:
                 game_state = previous_game_state
             elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN, GameStates.EQUIPMENT_MENU):
+                # menus
+                game_state = previous_game_state
+            elif game_state == GameStates.LOOK:
                 game_state = previous_game_state
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})

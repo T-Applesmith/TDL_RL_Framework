@@ -152,13 +152,15 @@ def place_entities(room, entities, dungeon_level, colors):
                 ai_component = BasicMonster()
 
                 monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True,
-                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
+                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component,\
+                                 description='''A fearsome orc''')
             else:
                 fighter_component = Fighter(hp=30, defense=2, power=8, xp=100)
                 ai_component = BasicMonster()
 
                 monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True,
-                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
+                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component,\
+                                 description='''A terrifying troll''')
 
             entities.append(monster)
 
@@ -172,28 +174,30 @@ def place_entities(room, entities, dungeon_level, colors):
             if item_choice == 'healing_potion':
                 item_component = Item(use_function=heal, amount=40)
                 item = Entity(x, y, '!', colors.get('violet'), 'Healing Potion', render_order=RenderOrder.ITEM,
-                              item=item_component)
+                              item=item_component, description='''A single-use item to remove some of your wounds''')
             elif item_choice == 'sword':
                 equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=3)
-                item = Entity(x, y, '/', colors.get('sky'), 'Sword', equippable=equippable_component)
+                item = Entity(x, y, '/', colors.get('sky'), 'Sword', equippable=equippable_component,\
+                              description='''An equippable item that moderately increases your attack''')
             elif item_choice == 'shield':
                 equippable_component = Equippable(EquipmentSlots.OFF_HAND, defense_bonus=1)
-                item = Entity(x, y, '[', colors.get('darker_orange'), 'Shield', equippable=equippable_component)
+                item = Entity(x, y, '[', colors.get('darker_orange'), 'Shield', equippable=equippable_component,\
+                              description='''An equippable item that increases your agility''')
             elif item_choice == 'fireball_scroll':
                 item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message(
                     'Left-click a target tile for the fireball, or right-click to cancel.', colors.get('light_cyan')),
                                       damage=25, radius=3)
                 item = Entity(x, y, '#', colors.get('red'), 'Fireball Scroll', render_order=RenderOrder.ITEM,
-                              item=item_component)
+                              item=item_component, description='''A single-use item to damage entities nearby the blast''')
             elif item_choice == 'confusion_scroll':
                 item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message(
                     'Left-click an enemy to confuse it, or right-click to cancel.', colors.get('light_cyan')))
                 item = Entity(x, y, '#', colors.get('light_pink'), 'Confusion Scroll', render_order=RenderOrder.ITEM,
-                              item=item_component)
+                              item=item_component, description='''A single-use item that causes an entity to be confused''')
             else:
                 item_component = Item(use_function=cast_lightning, damage=20, maximum_range=5)
                 item = Entity(x, y, '#', colors.get('yellow'), 'Lightning Scroll', render_order=RenderOrder.ITEM,
-                              item=item_component)
+                              item=item_component, description='''A single-use item that damages the nearest enemy''')
 
             entities.append(item)
 

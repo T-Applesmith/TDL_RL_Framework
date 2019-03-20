@@ -27,6 +27,8 @@ def handle_keys(user_input, game_state, config_dict):
             return handle_options_menu(user_input)
         elif game_state == GameStates.DEV_CONSOLE:
             return handle_dev_console(user_input)
+        elif game_state == GameStates.LOOK:
+            return handle_look(user_input)
 
     return {}
 
@@ -91,14 +93,14 @@ def handle_player_turn_keys(user_input, config_dict):
     elif key_char == config_dict.get('key_equipment'):
         #elif key_char == 'e':
         return {'show_equipment_menu': True}
-
     elif key_char == config_dict.get('key_help'):
         #elif key_char == '?':
         #Open the help_screen
         return {'show_help_screen': True}
-
     elif key_char == config_dict.get('key_dev_console'):    #'~'
         return {'show_dev_console': True}        
+    elif key_char == config_dict.get('key_look'):   #l
+        return {'look': True}
 
     # CANNOT BE RE-BOUND
     if user_input.key == 'ENTER' and user_input.alt:
@@ -270,6 +272,13 @@ def handle_dev_console(user_input):
         return {'dev_console_submit': True}
     elif user_input.key == 'BACKSPACE':
         return {'dev_console_backspace': True}
+
+    return {}
+
+
+def handle_look(user_input):
+    if user_input.key == 'ESCAPE':
+        return {'return_to_game': True}
 
     return {}
 

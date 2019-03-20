@@ -16,3 +16,4 @@ class GameStates(Enum):
     HELP_SCREEN = 12
     OPTIONS_MENU = 13
     DEV_CONSOLE = 14
+    LOOK = 15

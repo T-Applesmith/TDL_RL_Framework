@@ -20,7 +20,7 @@ class Entity:
     A generic object to represent players, enemies, items, etc.
     """
     def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None,
-                 item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None):
+                 item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None, description=None):
         self.x = x
         self.y = y
         self.char = char
@@ -36,6 +36,7 @@ class Entity:
         self.level = level
         self.equipment = equipment
         self.equippable = equippable
+        self.description = description
 
         if self.fighter:
             self.fighter.owner = self
@@ -142,7 +143,8 @@ class Entity:
             'stairs': stairs_data,
             'level': level_data,
             'equipment': equipment_data,
-            'equippable': equippable_data
+            'equippable': equippable_data,
+            'description': self.description
         }
 
         return json_data
@@ -164,8 +166,9 @@ class Entity:
         level_json = json_data.get('level')
         equipment_json = json_data.get('equipment')
         equippable_json = json_data.get('equippable')
+        description = json_data.get('description')
 
-        entity = Entity(x, y, char, color, name, blocks, render_order)
+        entity = Entity(x, y, char, color, name, blocks, render_order, description=description)
 
         if fighter_json:
             entity.fighter = Fighter.from_json(fighter_json)

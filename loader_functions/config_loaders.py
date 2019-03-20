@@ -91,6 +91,11 @@ def write_config(config_dict):
     else:
         config['KEYBINDINGS']['key_drop'] = 'd'
 
+    if config_dict.get('key_look') and (config_dict['allow_keybinding'] in ['True', 'TRUE']):
+        config['KEYBINDINGS']['key_look'] = config_dict['key_look']
+    else:
+        config['KEYBINDINGS']['key_look'] = 'L'
+
     # Keybinding - Menus
     if config_dict.get('key_inventory') and (config_dict['allow_keybinding'] in ['True', 'TRUE']):
         config['KEYBINDINGS']['key_inventory'] = config_dict['key_inventory']

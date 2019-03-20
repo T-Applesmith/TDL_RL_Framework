@@ -4,7 +4,7 @@ from dev.dev_console import dev_console
 from enum import Enum
 from game_states import GameStates
 from menus import character_screen, inventory_menu, level_up_menu, equipment_menu, escape_menu, keybindings_screen,\
-     help_screen, options_menu, fps_counter
+     help_screen, options_menu, fps_counter, look_box
 
 from loader_functions.config_loaders import write_config
 
@@ -14,6 +14,7 @@ class RenderOrder(Enum):
     CORPSE = 2
     ITEM = 3
     ACTOR = 4
+    TARGETER = 5
 
 
 def get_names_under_mouse(mouse_coordinates, entities, game_map):
@@ -26,6 +27,23 @@ def get_names_under_mouse(mouse_coordinates, entities, game_map):
     names = '[{0},{1}] {2}'.format(x, y, names)
 
     return names.capitalize()
+
+
+def get_description_under_mouse(mouse_coordinates, entities, game_map):
+    x, y = mouse_coordinates
+    render_order_index = 4
+    description = None
+
+    while description == None and render_order_index > 0:
+        for entity in entities:
+            if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y] and entity.render_order == render_order_index:
+                description = entity.description
+            if entity.x == x and entity.y == y and entity.description:
+                print('{0}'.format(entity.description))
+        render_order_index -= 1
+
+    return description
+        
 
 
 def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, string_color):
@@ -134,7 +152,12 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
         help_screen(root_console, 'HELP (PROOF OF CONCEPT)', 60, 40, screen_width, screen_height)
 
     elif game_state == GameStates.DEV_CONSOLE:
-        dev_console(con, root_console, '~:', dev_console_input, 60, 1, screen_width, screen_height, config) 
+        dev_console(con, root_console, '~:', dev_console_input, 60, 1, screen_width, screen_height, config)
+
+    elif game_state == GameStates.LOOK:
+        description = get_description_under_mouse(mouse_coordinates, entities, game_map)
+        print('Description: {0}'.format(description))
+        look_box(root_console, description, screen_width, screen_width, screen_height)
         
     if config['fps_display'] in ['True', 'TRUE', 'true']:
         fps_counter(root_console, constants['screen_width'])     
