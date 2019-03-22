@@ -56,21 +56,22 @@ class MessageLog:
             self.number += 1
             self.index_message(1)
 
-            print_dev('Total messages: {0}'.format(self.number))
+            #print_dev('Total messages: {0}'.format(self.number))
 
     def index_message(self, num):
-        self.index += num
+        index = self.index + num
 
         # uses magic numbers (menu height=6) to determine bounds of index scrolling
-        if self.number <= 7 or self.index < 1:
-            self.index = 1
-        elif self.index + 5 > self.number:
-            self.index -= num
+        if self.number <= 6 or index < 1:
+            index = 1
+        elif index + 5 > self.number:
+            index -= num
 
-        if self.index > self.max_messages:
-            self.index = self.max_messages - 6
-        print('Indexing message by {0}; New index {1}'.format(num, self.index))
+        if index > self.max_messages:
+            index = self.max_messages - 6
+        #print('Indexing message by {0}; New index {1}'.format(num, self.index))
 
+        self.index = index
         return
 
     def to_json(self):

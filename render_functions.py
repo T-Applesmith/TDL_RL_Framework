@@ -35,13 +35,15 @@ def get_description_under_mouse(mouse_coordinates, entities, game_map):
     description = None
 
     while description == None and render_order_index > 0:
+        render_order_enum = RenderOrder(render_order_index)
+        #print('{0}'.format(render_order_enum))
         for entity in entities:
-            if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y] and entity.render_order == render_order_index:
+            if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y] and entity.render_order == render_order_enum:
                 description = entity.description
-            if entity.x == x and entity.y == y and entity.description:
-                print('{0}'.format(entity.description))
+                #print('Render Order: {0}'.format(entity.render_order))
         render_order_index -= 1
-
+        
+    print('Description: {0}'.format(description))
     return description
         
 
@@ -156,7 +158,6 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
     elif game_state == GameStates.LOOK:
         description = get_description_under_mouse(mouse_coordinates, entities, game_map)
-        print('Description: {0}'.format(description))
         look_box(root_console, description, screen_width, screen_width, screen_height)
         
     if config['fps_display'] in ['True', 'TRUE', 'true']:

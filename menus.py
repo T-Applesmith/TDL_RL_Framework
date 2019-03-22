@@ -276,9 +276,16 @@ def fps_counter(root_console, screen_width):
 
 def look_box(root_console, description, width, screen_width, screen_height):
     window = tdl.Console(width, 7)
+    window.draw_rect(0, 0, width, 7, None, fg=(255, 255, 255), bg=None)
+    
     if description:
-        window.draw_str(0, 0, description)
-    root_console.blit(window, 0, screen_height-7, width, 0, 0, 0)
+        description_wrapped = textwrap.wrap(description, width)
+
+        for i, line in enumerate(description_wrapped):
+            if i < 7:
+                window.draw_str(0, 0 + i, description_wrapped[i])
+            
+    root_console.blit(window, 0, screen_height - 7, width, 0, 0, 0)
     
 
 def message_box(con, root_console, header, width, screen_width, screen_height):
