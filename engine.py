@@ -16,12 +16,12 @@ from utils.map_utils import next_floor
 from death_functions import kill_monster, kill_player
 from dev.dev_console import dev_powers
 from dev.dev_print import print_dev
-from entity import get_blocking_entities_at_location
+from entity import Entity, get_blocking_entities_at_location
 from game_messages import Message
 from game_states import GameStates
 from input_handlers import handle_keys, handle_mouse, handle_main_menu
 from menus import main_menu, message_box
-from render_functions import clear_all, render_all
+from render_functions import clear_all, render_all, RenderOrder
 
 
 def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config):
@@ -31,6 +31,8 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
     fov_recompute = True
 
     mouse_coordinates = (0, 0)
+    previous_mouse_coordinates = mouse_coordinates
+    mouse_coordinates_changed = False
 
     previous_game_state = game_state
 
@@ -55,7 +57,13 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 user_input = event
                 break
             elif event.type == 'MOUSEMOTION':
+                previous_mouse_coordinates = mouse_coordinates
                 mouse_coordinates = event.cell
+                if mouse_coordinates != previous_mouse_coordinates:
+                    mouse_coordinates_changed = True
+                elif mouse_coordinates == previous_mouse_coordinates:
+                    mouse_coordinates_changed = False
+                #print('{0}'.format(mouse_coordinates))
             elif event.type == 'MOUSEDOWN':
                 user_mouse_input = event
                 break
@@ -64,7 +72,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             user_input = None
             user_mouse_input = None
 
-        if not (user_input or user_mouse_input):
+        if not (user_input or user_mouse_input or mouse_coordinates_changed):
             #skips everything else if no input
             continue
 
@@ -232,6 +240,12 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
             if game_state == GameStates.EQUIPMENT_MENU and equipment_selected is not None:
                 player.inventory.add_item(equipment_selected, constants['colors'])
                 player_turn_results.extend(player.equipment.toggle_equip(equipment_selected))
+
+        if game_state == GameStates.TARGETING:
+            if mouse_coordinates_changed and mouse_coordinates[0] < game_map.width and mouse_coordinates[1] < game_map.height:
+                for entity in entities:
+                    if entity.name == 'Target Reticle' and game_map.fov[mouse_coordinates]:
+                        (entity.x, entity.y) = mouse_coordinates
 
         if left_click:
             if game_state == GameStates.TARGETING:
@@ -406,10 +420,18 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
                 targeting_item = targeting
 
+                target_reticle = Entity(player.x, player.y, 'X', constants['colors'].get('yellow'), 'Target Reticle', render_order=RenderOrder.TARGETER,\
+                              visible_time='blink_moderate')
+                entities.append(target_reticle)
+
                 message_log.add_message(targeting_item.item.targeting_message)
 
             if targeting_cancelled:
                 game_state = previous_game_state
+
+                for entity in entities:
+                    if entity.name == 'Target Reticle':
+                        entities.remove(entity)
 
                 message_log.add_message(Message('Targeting cancelled'))
 
@@ -453,6 +475,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                         break
             else:
                 game_state = GameStates.PLAYERS_TURN
+
 
 def main():
     constants = get_constants()

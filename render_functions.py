@@ -1,3 +1,4 @@
+import math, time
 import tdl
 
 from dev.dev_console import dev_console
@@ -21,7 +22,7 @@ def get_names_under_mouse(mouse_coordinates, entities, game_map):
     x, y = mouse_coordinates
 
     names = [entity.name for entity in entities
-             if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y]]
+             if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y] and entity.name != 'Target Reticle']
     names = ', '.join(names)
 
     names = '[{0},{1}] {2}'.format(x, y, names)
@@ -96,8 +97,17 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
     # Draw all entities in the list
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)
 
+    current_time = time.clock()
+    
     for entity in entities_in_render_order:
-        draw_entity(con, entity, game_map)
+        if not entity.visible_time:
+            draw_entity(con, entity, game_map)
+        elif entity.visible_time == 'blink_slow' and math.floor(current_time) % 2 == 0:
+            draw_entity(con, entity, game_map)
+        elif entity.visible_time == 'blink_moderate' and current_time - math.floor(current_time) >= .5:
+            draw_entity(con, entity, game_map)
+        elif entity.visible_time == 'blink_fast' and (2*current_time - math.floor(2*current_time)) >= .5:
+            draw_entity(con, entity, game_map)
 
     con.draw_str(1, screen_height - 2, 'HP: {0:02}/{1:02}'.format(player.fighter.hp, player.fighter.max_hp))
 
