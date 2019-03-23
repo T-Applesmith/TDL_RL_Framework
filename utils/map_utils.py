@@ -79,6 +79,32 @@ class GameMap(Map):
         return game_map
 
 
+class Previous_Game_Map:
+    def __init__(self, game_map, entities):
+        self.game_map = game_map
+        self.entities = entities
+        self.dungeon_level = game_map.dungeon_level
+
+    def to_json(self):
+        json_data = {
+            'game_map': self.game_map.to_json(),
+            'entities': [entity.to_json() for entity in self.entities],
+            'dungeon_level': self.dungeon_level
+        }
+
+        return json_data
+
+    def from_json(json_data):
+        game_map_json = json_data.get('game_map')
+        entities_json = json_data.get('entities')
+
+        game_map = GameMap.from_json(game_map_json)
+        entities = [Entity.from_json(entity_json) for entity_json in entities_json]
+
+        previous_game_map = Previous_Game_Map(game_map, entities)
+        return previous_game_map
+        
+
 class Rect:
     def __init__(self, x, y, w, h):
         self.x1 = x
@@ -202,7 +228,7 @@ def place_entities(room, entities, dungeon_level, colors):
             entities.append(item)
 
 
-def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, colors):
+def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, colors, direction='down'):
     rooms = []
     num_rooms = 0
 
@@ -263,23 +289,111 @@ def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_h
             rooms.append(new_room)
             num_rooms += 1
 
-    stairs_component = Stairs(game_map.dungeon_level + 1)
-    down_stairs = Entity(center_of_last_room_x, center_of_last_room_y, '>', (255, 255, 255), 'Stairs',
-                         render_order=RenderOrder.STAIRS, stairs=stairs_component)
+    if direction == 'down':
+        down_stairs_x = center_of_last_room_x
+        down_stairs_y = center_of_last_room_y
+        up_stairs_x = player.x
+        up_stairs_y = player.y
+    elif direction == 'up':
+        down_stairs_x = player.x
+        down_stairs_y = player.y
+        up_stairs_x = center_of_last_room_x
+        up_stairs_y = center_of_last_room_y
+
+    stairs_component_down = Stairs(game_map.dungeon_level + 1)
+    down_stairs = Entity(down_stairs_x, down_stairs_y, '>', (255, 255, 255), 'Stairs Down',
+                         render_order=RenderOrder.STAIRS, stairs=stairs_component_down)
     entities.append(down_stairs)
 
+    if game_map.dungeon_level - 1 > 0:
+        stairs_component_up = Stairs(game_map.dungeon_level - 1)
+        up_stairs = Entity(up_stairs_x, up_stairs_y, '<', (255, 255, 255), 'Stairs Up', render_order=RenderOrder.STAIRS,\
+                           stairs=stairs_component_up)
+        entities.append(up_stairs)
+    
 
-def next_floor(player, message_log, dungeon_level, constants):
-    game_map = GameMap(constants['map_width'], constants['map_height'], dungeon_level)
-    entities = [player]
+def next_floor(previous_game_maps, game_map, entities, player, message_log, dungeon_level, constants):
+    #Save previous map
+    previous_map = Previous_Game_Map(game_map, entities)
+    if previous_game_maps:
+        previous_game_maps.append(previous_map)
+    else:
+        previous_game_maps = [previous_map]
 
-    make_map(game_map, constants['max_rooms'], constants['room_min_size'],
-             constants['room_max_size'], constants['map_width'], constants['map_height'], player, entities,
-             constants['colors'])
+    #Check if map is made, checkout it if true
+    map_already_made = None
+    for previous_map in previous_game_maps:
+        if dungeon_level == previous_map.dungeon_level:
+            map_already_made = previous_map
+            previous_game_maps.remove(map_already_made)
+            break
 
-    player.fighter.heal(player.fighter.max_hp // 2)
+    if map_already_made:
+        game_map = map_already_made.game_map
+        entities = map_already_made.entities
 
-    message_log.add_message(Message('You take a moment to rest, and recover your strength.',
-                                    constants['colors'].get('light_violet')))
+        for entity in entities:
+                if entity.stairs and entity.name == 'Stairs Up':
+                    player.x = entity.x
+                    player.y = entity.y
+                    
+    else:
+        #Create new map
+        game_map = GameMap(constants['map_width'], constants['map_height'], dungeon_level)
+        entities = [player]
 
-    return game_map, entities
+        make_map(game_map, constants['max_rooms'], constants['room_min_size'],
+                 constants['room_max_size'], constants['map_width'], constants['map_height'], player, entities,
+                 constants['colors'], direction='down')
+
+        player.fighter.heal(player.fighter.max_hp // 2)
+
+        message_log.add_message(Message('You take a moment to rest, and recover your strength.',\
+                                        constants['colors'].get('light_violet')))
+
+    return game_map, entities, previous_game_maps, player
+
+def previous_floor(previous_game_maps, game_map, entities, player, message_log, dungeon_level, constants):
+    '''
+    possibly consolidate into next_floor, as current only difference is direction of movement
+    '''
+    
+    #Save previous map
+    previous_map = Previous_Game_Map(game_map, entities)
+    if previous_game_maps:
+        previous_game_maps.append(previous_map)
+    else:
+        previous_game_maps = [previous_map]
+
+    #Check if map is made, checkout it if true
+    map_already_made = None
+    for previous_map in previous_game_maps:
+        if dungeon_level == previous_map.dungeon_level:
+            map_already_made = previous_map
+            previous_game_maps.remove(map_already_made)
+            break
+
+    if map_already_made:
+        game_map = map_already_made.game_map
+        entities = map_already_made.entities
+
+        for entity in entities:
+                if entity.stairs and entity.name == 'Stairs Down':
+                    player.x = entity.x
+                    player.y = entity.y
+                    
+    else:
+        #Create new map
+        game_map = GameMap(constants['map_width'], constants['map_height'], dungeon_level)
+        entities = [player]
+
+        make_map(game_map, constants['max_rooms'], constants['room_min_size'],
+                 constants['room_max_size'], constants['map_width'], constants['map_height'], player, entities,
+                 constants['colors'], direction='up')
+
+        player.fighter.heal(player.fighter.max_hp // 2)
+
+        message_log.add_message(Message('You take a moment to rest, and recover your strength.',\
+                                        constants['colors'].get('light_violet')))
+
+    return game_map, entities, previous_game_maps, player

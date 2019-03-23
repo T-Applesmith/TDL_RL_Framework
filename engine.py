@@ -11,7 +11,7 @@ from loader_functions.initialize_new_game import get_constants, get_game_variabl
 from loader_functions.json_loaders import load_game, save_game
 from loader_functions.config_loaders import write_config, read_config
 
-from utils.map_utils import next_floor
+from utils.map_utils import next_floor, previous_floor
 
 from death_functions import kill_monster, kill_player
 from dev.dev_console import dev_powers
@@ -24,7 +24,7 @@ from menus import main_menu, message_box
 from render_functions import clear_all, render_all, RenderOrder
 
 
-def play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config):
+def play_game(player, entities, game_map, previous_game_maps, message_log, game_state, root_console, con, panel, constants, config):
     print_dev('======================\nBeginning to play game\n======================', config)
     tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
@@ -89,6 +89,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
         inventory_index = action.get('inventory_index')
         escape_index = action.get('escape_index')
         down_stairs = action.get('down_stairs')
+        up_stairs = action.get('up_stairs')
         level_up = action.get('level_up')
         look = action.get('look')
         
@@ -194,11 +195,21 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
         if down_stairs and game_state == GameStates.PLAYERS_TURN:
             for entity in entities:
-                if entity.stairs and entity.x == player.x and entity.y == player.y:
-                    game_map, entities = next_floor(player, message_log, entity.stairs.floor, constants)
+                if entity.stairs and entity.x == player.x and entity.y == player.y and entity.name == 'Stairs Down':
+                    game_map, entities, previous_game_maps, player = next_floor(previous_game_maps, game_map, entities, player, message_log, entity.stairs.floor, constants)
                     fov_recompute = True
                     con.clear()
 
+                    break
+            else:
+                message_log.add_message(Message('There are no stairs here.', constants['colors'].get('yellow')))
+
+        if up_stairs and game_state == GameStates.PLAYERS_TURN:
+            for entity in entities:
+                if entity.stairs and entity.x == player.x and entity.y == player.y and entity.name == 'Stairs Up':
+                    game_map, entities, previous_game_maps, player = previous_floor(previous_game_maps, game_map, entities, player, message_log, entity.stairs.floor, constants)
+                    fov_recompute = True
+                    con.clear()
                     break
             else:
                 message_log.add_message(Message('There are no stairs here.', constants['colors'].get('yellow')))
@@ -361,7 +372,7 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 print_dev('game map: '+str(game_map), config)
                 print_dev('message log: '+str(message_log), config)
                 print_dev('game_state: '+str(game_state), config)
-                save_game(player, entities, game_map, message_log, game_state, config)
+                save_game(player, entities, game_map, previous_game_maps, message_log, game_state, config)
                 print_dev('==============\nSave complete!\n==============\n', config)
                 return True
             else:
@@ -509,6 +520,7 @@ def main():
     player = None
     entities = []
     game_map = None
+    previous_game_maps = []
     message_log = None
     game_state = None
 
@@ -552,7 +564,7 @@ def main():
                 show_main_menu = False
             elif load_saved_game:
                 try:
-                    player, entities, game_map, message_log, game_state = load_game(config_dict)
+                    player, entities, game_map, previous_game_maps, message_log, game_state = load_game(config_dict)
                     show_main_menu = False
                 except FileNotFoundError:
                     show_load_error_message = True
@@ -565,7 +577,7 @@ def main():
             root_console.clear()
             con.clear()
             panel.clear()
-            play_game(player, entities, game_map, message_log, game_state, root_console, con, panel, constants, config_dict)
+            play_game(player, entities, game_map, previous_game_maps, message_log, game_state, root_console, con, panel, constants, config_dict)
 
             show_main_menu = True
 

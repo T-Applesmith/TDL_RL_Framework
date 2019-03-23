@@ -60,6 +60,9 @@ def handle_player_turn_keys(user_input, config_dict):
     elif key_char == config_dict.get('key_down_stairs'):
         #elif key_char == '>':
         return {'down_stairs': True}
+    elif key_char == config_dict.get('key_up_stairs'):
+        #elif key_char == '<':
+        return {'up_stairs': True}
 
     elif key_char == config_dict.get('key_character_menu'):
         #elif key_char == 'c':
