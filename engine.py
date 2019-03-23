@@ -148,6 +148,16 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
 
                 game_state = GameStates.ENEMY_TURN
 
+        if move and GameStates.TARGETING:
+            for entity in entities:
+                if entity.name == 'Target Reticle':
+                    dx, dy = move
+                    destination_x = entity.x + dx
+                    destination_y = entity.y + dy
+                    if game_map.fov[destination_x, destination_y]:
+                        entity.x = destination_x
+                        entity.y = destination_y
+
         elif wait:
             game_state = GameStates.ENEMY_TURN
 
@@ -390,6 +400,11 @@ def play_game(player, entities, game_map, message_log, game_state, root_console,
                 game_state = GameStates.ENEMY_TURN
 
             if item_consumed:
+                if game_state == GameStates.TARGETING:
+                    for entity in entities:
+                        if entity.name == 'Target Reticle':
+                            entities.remove(entity)
+                    
                 game_state = GameStates.ENEMY_TURN
 
             if item_dropped:
