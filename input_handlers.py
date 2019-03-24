@@ -106,6 +106,8 @@ def handle_targeting_keys(user_input, config_dict):
     movement = handle_movement_keys(user_input, key_char, config_dict)
     if movement:
         return movement
+    if user_input.key == 'ENTER':
+        return {'confirm': True}
 
     return {}
 

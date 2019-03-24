@@ -9,22 +9,22 @@ class BasicMonster:
         results = []
 
         monster = self.owner
-        print('Fighter: {1}; Targets: {0}'.format([targ.to_json() for targ in monster.fighter.targets], monster.fighter))
+        #print('Fighter: {1}; Targets: {0}'.format([targ.to_json() for targ in monster.fighter.targets], monster.fighter))
 
         if game_map.fov[monster.x, monster.y]:
-            print('Player within FOV')
+            #print('Player within FOV')
             # add target to list of targets if not already
             target_in_targets = False
             for monster_target in monster.fighter.targets:
                 if entities.index(target) == monster_target.entity_index:
-                    print('   Updating target location')
+                    #print('   Updating target location')
                     monster_target.update_location(target.x, target.y)
                     target_in_targets = True
                     break
 
             # otherwise update location
             if not target_in_targets:
-                print('   Adding new target')
+                #print('   Adding new target')
                 target_entity = Target_Entity(entities.index(target), target.x, target.y)
                 monster.fighter.targets.append(target_entity)
 
@@ -78,8 +78,24 @@ class ConfusedMonster:
             random_x = self.owner.x + randint(0, 2) - 1
             random_y = self.owner.y + randint(0, 2) - 1
 
-            if random_x != self.owner.x and random_y != self.owner.y:
-                self.owner.move_towards(game_map, entities, target_x=random_x, target_y=random_y)
+            print('({0},{1}),({2},{3})'.format(random_x, random_y, self.owner.x, self.owner.y))
+
+            if random_x != self.owner.x or random_y != self.owner.y:
+                entity_present = False
+                for entity in entities:
+                    if random_x == entity.x and random_y == entity.y and entity.fighter:
+                        entity_present = True
+
+                if entity_present:                        
+                    attack_results = self.owner.fighter.attack(target)
+                    results.extend(attack_results)
+                    print('  attacked')
+                else:
+                    self.owner.move_towards(game_map, entities, target_x=random_x, target_y=random_y)
+                    print('  moved')
+            else:
+                print('  wait')
+                pass
 
             self.number_of_turns -= 1
         else:

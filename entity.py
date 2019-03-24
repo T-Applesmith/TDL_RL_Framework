@@ -319,7 +319,7 @@ class Entity:
             # if no paths, use old method
             # typically used due to path size >= 25
             # noticed that path is sometimes zero - but there is an alternate path? -no issues yet but keep in mind
-            print('Cannot A*, using backup pathing algo, path distance: {0}'.format(tcod.path_size(my_path)))
+            #print('Cannot A*, using backup pathing algo, path distance: {0}'.format(tcod.path_size(my_path)))
             self.move_backup(game_map, entities, target_x=target_x, target_y=target_y)
 
         # free up memory

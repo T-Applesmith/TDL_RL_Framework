@@ -92,6 +92,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
         up_stairs = action.get('up_stairs')
         level_up = action.get('level_up')
         look = action.get('look')
+        confirm = action.get('confirm')
         
         show_character_screen = action.get('show_character_screen')
         show_equipment_menu = action.get('show_equipment_menu')
@@ -267,6 +268,16 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 for entity in entities:
                     if entity.name == 'Target Reticle' and game_map.fov[mouse_coordinates]:
                         (entity.x, entity.y) = mouse_coordinates
+
+            if confirm:
+                for entity in entities:
+                    if entity.name == 'Target Reticle':
+                        target_x = entity.x
+                        target_y = entity.y
+
+                item_use_results = player.inventory.use(targeting_item, constants['colors'], entities=entities,
+                                                        game_map=game_map, target_x=target_x, target_y=target_y)
+                player_turn_results.extend(item_use_results)
 
         if left_click:
             if game_state == GameStates.TARGETING:
