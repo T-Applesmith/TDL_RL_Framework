@@ -1,6 +1,7 @@
 from random import randint
 
 from game_messages import Message
+from components.target_entity import Target_Entity
 
 
 class BasicMonster:
@@ -10,12 +11,37 @@ class BasicMonster:
         monster = self.owner
 
         if game_map.fov[monster.x, monster.y]:
+            print('Player within FOV')
+            # add target to list of targets if not already
+            target_in_targets = False
+            for monster_target in monster.fighter.targets:
+                if entities.index(target) == monster_target.entity_index:
+                    monster_target.update_location(target.x, target.y)
+                    target_in_targets = True
+                    break
+
+            # otherwise update location
+            if not target_in_targets:
+                monster.fighter.targets.append(Target_Entity(entities.index(target), target.x, target.y))
+
+            # move to location
             if monster.distance_to(target) >= 2:
                 monster.move_towards(game_map, entities, target=target)
 
             elif target.fighter.hp > 0:
                 attack_results = monster.fighter.attack(target)
                 results.extend(attack_results)
+
+        # if cannot see but known last location
+        else:
+            for monster_target in monster.fighter.targets:
+                if entities.index(target) == monster_target.entity_index:
+                    # move to last known location
+                    if monster.distance_to(monster_target):
+                        monster.move_towards(game_map, entities, target=monster_target)
+                    
+                    monster_target.increment_time()
+                    
 
         return results
 

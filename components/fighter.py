@@ -2,12 +2,13 @@ from game_messages import Message
 
 
 class Fighter:
-    def __init__(self, hp, defense, power, xp=0):
+    def __init__(self, hp, defense, power, xp=0, targets=[]):
         self.base_max_hp = hp
         self.hp = hp
         self.base_defense = defense
         self.base_power = power
         self.xp = xp
+        self.targets = targets
 
     @property
     def max_hp(self):
@@ -73,7 +74,8 @@ class Fighter:
             'hp': self.hp,
             'defense': self.base_defense,
             'power': self.base_power,
-            'xp': self.xp
+            'xp': self.xp,
+            'targets': [target.to_json() for target in self.targets]
         }
 
         return json_data
@@ -85,6 +87,7 @@ class Fighter:
         defense = json_data.get('defense')
         power = json_data.get('power')
         xp = json_data.get('xp')
+        targets_data = json_data.get('targets')
 
         fighter = Fighter(max_hp, defense, power, xp)
         fighter.hp = hp
