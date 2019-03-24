@@ -110,7 +110,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
         dev_console_submit = action.get('dev_console_submit')
 
         # handle dev console
-        print_dev('dev_console_keypress:{0}, console_input:{1}'.format(dev_console_keypress,dev_console_input), config)
+        #print_dev('dev_console_keypress:{0}, console_input:{1}'.format(dev_console_keypress,dev_console_input), config)
         if dev_console_input == None or show_dev_console:
             dev_console_input = ''
         elif dev_console_keypress and len(dev_console_input) < 55:

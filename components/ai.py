@@ -9,6 +9,7 @@ class BasicMonster:
         results = []
 
         monster = self.owner
+        print('Fighter: {1}; Targets: {0}'.format([targ.to_json() for targ in monster.fighter.targets], monster.fighter))
 
         if game_map.fov[monster.x, monster.y]:
             print('Player within FOV')
@@ -16,13 +17,16 @@ class BasicMonster:
             target_in_targets = False
             for monster_target in monster.fighter.targets:
                 if entities.index(target) == monster_target.entity_index:
+                    print('   Updating target location')
                     monster_target.update_location(target.x, target.y)
                     target_in_targets = True
                     break
 
             # otherwise update location
             if not target_in_targets:
-                monster.fighter.targets.append(Target_Entity(entities.index(target), target.x, target.y))
+                print('   Adding new target')
+                target_entity = Target_Entity(entities.index(target), target.x, target.y)
+                monster.fighter.targets.append(target_entity)
 
             # move to location
             if monster.distance_to(target) >= 2:
@@ -39,8 +43,11 @@ class BasicMonster:
                     # move to last known location
                     if monster.distance_to(monster_target):
                         monster.move_towards(game_map, entities, target=monster_target)
-                    
+
+                    # forget target if too long without finding
                     monster_target.increment_time()
+                    if monster_target.time_past >= monster_target.time_to_drop_track:
+                        monster.fighter.targets.remove(monster_target)
                     
 
         return results
