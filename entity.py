@@ -297,13 +297,13 @@ class Entity:
             target_y = kwargs.get('target_y')
 
         #pre A* movement to slightly improve cpu time
-        if self.x == target.x:
-            if move_cardinal_y(self, target, game_map):
+        if self.x == target_x:
+            if move_cardinal_y(self, target_y, game_map):
                 self.move_backup(game_map, entities, target_x=target_x, target_y=target_y)
                 #print('Walking North/South')
      
-        elif self.y == target.y:
-            if move_cardinal_x(self, target, game_map):
+        elif self.y == target_y:
+            if move_cardinal_x(self, target_x, game_map):
                 self.move_backup(game_map, entities, target_x=target_x, target_y=target_y)
                 #print('Walking East/West')
 
@@ -359,26 +359,26 @@ def get_blocking_entities_at_location(entities, destination_x, destination_y):
 
     return None
 
-def move_cardinal_x(self, target, game_map):
+def move_cardinal_x(self, target_x, game_map):
     walkable = True
     walk = self.x
-    x = target.x - self.x
+    x = target_x - self.x
     direction = int(x>0) - int(x<0)
 
-    while walk != target.x:
+    while walk != target_x:
         walk += direction
         if not (game_map.transparent[walk][self.y] and game_map.walkable[walk][self.y]):
             walkable = False
 
     return walkable
 
-def move_cardinal_y(self, target, game_map):
+def move_cardinal_y(self, target_y, game_map):
     walkable = True
     walk = self.y
-    y = target.y - self.y
+    y = target_y - self.y
     direction = int(y>0) - int(y<0)
 
-    while walk != target.y:
+    while walk != target_y:
         walk += direction
         if not (game_map.transparent[self.x][walk] and game_map.walkable[self.x][walk]):
             walkable = False

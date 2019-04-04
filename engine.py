@@ -37,6 +37,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
     previous_game_state = game_state
 
     targeting_item = None
+    target_reticle_index = None
     dev_console_input = ''
 
     while not tdl.event.is_window_closed():
@@ -151,14 +152,14 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 game_state = GameStates.ENEMY_TURN
 
         if move and GameStates.TARGETING:
-            for entity in entities:
-                if entity.name == 'Target Reticle':
-                    dx, dy = move
-                    destination_x = entity.x + dx
-                    destination_y = entity.y + dy
-                    if game_map.fov[destination_x, destination_y]:
-                        entity.x = destination_x
-                        entity.y = destination_y
+            if target_reticle_index and entities[target_reticle_index]:
+                entity = entities[target_reticle_index]
+                dx, dy = move
+                destination_x = entity.x + dx
+                destination_y = entity.y + dy
+                if game_map.fov[destination_x, destination_y]:
+                    entity.x = destination_x
+                    entity.y = destination_y
 
         elif wait:
             game_state = GameStates.ENEMY_TURN
@@ -265,15 +266,14 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
 
         if game_state == GameStates.TARGETING:
             if mouse_coordinates_changed and mouse_coordinates[0] < game_map.width and mouse_coordinates[1] < game_map.height:
-                for entity in entities:
-                    if entity.name == 'Target Reticle' and game_map.fov[mouse_coordinates]:
-                        (entity.x, entity.y) = mouse_coordinates
+                if target_reticle_index and entities[target_reticle_index] and game_map.fov[mouse_coordinates]:
+                    entity = entities[target_reticle_index]
+                    (entity.x, entity.y) = mouse_coordinates
 
             if confirm:
-                for entity in entities:
-                    if entity.name == 'Target Reticle':
-                        target_x = entity.x
-                        target_y = entity.y
+                if target_reticle_index and entities[target_reticle_index]:
+                    target_x = entity.x
+                    target_y = entity.y
 
                 item_use_results = player.inventory.use(targeting_item, constants['colors'], entities=entities,
                                                         game_map=game_map, target_x=target_x, target_y=target_y)
@@ -423,9 +423,10 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
 
             if item_consumed:
                 if game_state == GameStates.TARGETING:
-                    for entity in entities:
-                        if entity.name == 'Target Reticle':
-                            entities.remove(entity)
+                    if target_reticle_index and entities[target_reticle_index]:
+                        entity = entities[target_reticle_index]
+                        entities.remove(entity)
+                        target_reticle_index = None
                     
                 game_state = GameStates.ENEMY_TURN
 
@@ -459,16 +460,24 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
 
                 target_reticle = Entity(player.x, player.y, 'X', constants['colors'].get('yellow'), 'Target Reticle', render_order=RenderOrder.TARGETER,\
                               visible_time='blink_moderate')
+                
                 entities.append(target_reticle)
+                target_reticle_index = entities.index(target_reticle)
 
                 message_log.add_message(targeting_item.item.targeting_message)
 
             if targeting_cancelled:
                 game_state = previous_game_state
 
+                '''
                 for entity in entities:
                     if entity.name == 'Target Reticle':
                         entities.remove(entity)
+                        target_reticle_index = None
+                        '''
+                if target_reticle_index and entities[target_reticle_index]:
+                    entities.remove(entities[target_reticle_index])
+                    target_reticle_index = None
 
                 message_log.add_message(Message('Targeting cancelled'))
 

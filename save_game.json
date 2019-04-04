@@ -22950,30 +22950,6 @@
         "height": 6,
         "messages": [
             {
-                "text": "Orc attacks Player for 3 hit points.",
-                "color": [
-                    255,
-                    255,
-                    255
-                ]
-            },
-            {
-                "text": "Player attacks Orc for 4 hit points.",
-                "color": [
-                    255,
-                    255,
-                    255
-                ]
-            },
-            {
-                "text": "Orc attacks Player for 3 hit points.",
-                "color": [
-                    255,
-                    255,
-                    255
-                ]
-            },
-            {
                 "text": "Player attacks Orc for 4 hit points.",
                 "color": [
                     255,
@@ -24546,6 +24522,30 @@
                 "color": [
                     0,
                     0,
+                    255
+                ]
+            },
+            {
+                "text": "Left-click an enemy to confuse it, or right-click to",
+                "color": [
+                    114,
+                    255,
+                    255
+                ]
+            },
+            {
+                "text": "cancel.",
+                "color": [
+                    114,
+                    255,
+                    255
+                ]
+            },
+            {
+                "text": "Targeting cancelled",
+                "color": [
+                    255,
+                    255,
                     255
                 ]
             }
