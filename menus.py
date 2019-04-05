@@ -150,7 +150,7 @@ def character_screen(root_console, player, character_screen_width, character_scr
     'Experience: {0}'.format(player.level.current_xp),'Experience to Level: {0}'.format(player.level.experience_to_next_level),\
     'Maximum HP: {0}'.format(player.fighter.max_hp), 'Attack: {0}'.format(player.fighter.power),\
     'Defense: {0}'.format(player.fighter.defense)]
-    menu_text(window, 0, 1, character_screen_height, character_screen_array)
+    menu_text(window, 0, 1, character_screen_width, character_screen_height, character_screen_array)
 
     x = screen_width // 2 - character_screen_width // 2
     y = screen_height // 2 - character_screen_height // 2
@@ -166,7 +166,7 @@ def keybindings_screen(root_console, header, menu_width, menu_height, screen_wid
     window.draw_str(0, 0, '{0}'.format(header))
 
     if config['allow_keybinding'] in ['True', 'TRUE']:
-        keybindings_rebind_list(window, menu_height, config)
+        keybindings_rebind_list(window, menu_width, menu_height, config)
     elif config['allow_keybinding'] in ['False', 'FALSE']:
         keybindings_full_uninteractive_list(window, menu_height)
 
@@ -174,7 +174,7 @@ def keybindings_screen(root_console, header, menu_width, menu_height, screen_wid
     y = screen_height // 2 - menu_height // 2
     root_console.blit(window, x, y, menu_width, menu_height, 0, 0)
 
-def keybindings_rebind_list(window, menu_height, config):
+def keybindings_rebind_list(window, menu_width, menu_height, config):
     keybinding_screen_array = ['Movement',\
                                '   wait:        {0}'.format(config['key_wait']),\
                                '   north:       {0}'.format(config['key_north']),\
@@ -198,7 +198,7 @@ def keybindings_rebind_list(window, menu_height, config):
                                '   return/escape: ESC',\
                                '   scroll log:    mousewheel up/down',\
                                '   fullscrren:    alt+Enter']
-    menu_text(window, 0, 1, menu_height, keybinding_screen_array)
+    menu_text(window, 0, 1, menu_width, menu_height, keybinding_screen_array)
     
 def keybindings_full_uninteractive_list(window, menu_height):
     """Lists typical key inputs and their default bindings"""
@@ -223,7 +223,7 @@ def escape_menu(root_console, header, menu_width, menu_height, screen_width, scr
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
     escape_array = ['{0}'.format(header), '(O)ptions', '(K)eybindings', '(H)elp', '(S)ave & Quit']
-    menu_text(window, 0, 1, menu_height, escape_array)
+    menu_text(window, 0, 1, menu_width, menu_height, escape_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -238,7 +238,7 @@ def options_menu(root_console, header, menu_width, menu_height, screen_width, sc
     options_array = ['{0}'.format(header), 'This is where', 'my options would be', 'if I HAD ANY!',\
                      'Master Volume: \N{INFINITY}', 'Display FPS: {0}'.format(config['fps_display']),\
                      'FPS Cap: {0}'.format(config['fps_cap'])]
-    menu_text(window, 0, 1, menu_height, options_array)
+    menu_text(window, 0, 1, menu_width, menu_height, options_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -259,7 +259,7 @@ def help_screen(root_console, header, menu_width, menu_height, screen_width, scr
                          '   move {1, 0} means move right one and up zero.',\
                          'Walk into enimies to attack with your weapon.'] 
                          
-    menu_text(window, 0, 1, menu_height, help_screen_array)
+    menu_text(window, 0, 1, menu_width, menu_height, help_screen_array)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -295,8 +295,7 @@ def message_box(con, root_console, header, width, screen_width, screen_height):
     menu(con, root_console, header, [], width, screen_width, screen_height)
 
 
-def menu_text(window, x, y, menu_height, text_array, truncation=True, tab_when_wrapped=False,
-                             justification='Left'):
+def menu_text(window, x, y, menu_width, menu_height, text_array, truncation=True, tab_when_wrapped=False, justification='Left'):
     for text in text_array:
         if y < menu_height:
             
@@ -311,9 +310,15 @@ def menu_text(window, x, y, menu_height, text_array, truncation=True, tab_when_w
                         if justification == 'Left':
                             window.draw_str(x, y, text, bg=None)
                         if justification == 'Center':
-                            pass
+                            while text.len() <= menu_width:
+                                text = ' '+text
+                                if text.len() <= menu_width:
+                                    text = text+' '
+                            window.draw_str(x, y, text, bg=None)
                         if justification == 'Right':
-                            pass
+                            while text.len() <= menu_width:
+                                text = ' '+text
+                            window.draw_str(x, y, text, bg=None)
                         
                     except tdl.TDLError as err:
                         # this is the bit that truncates
@@ -324,6 +329,8 @@ def menu_text(window, x, y, menu_height, text_array, truncation=True, tab_when_w
                         pass
             else:
                 # if text is too long, wrap it
+                if tab_when_wrapped:
+                    pass
                 pass
             
             #window.draw_str(x, y, text)
