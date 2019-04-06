@@ -44,7 +44,7 @@ class MessageLog:
         new_msg_lines = textwrap.wrap(message.text, self.width)
         
         for line in new_msg_lines:
-            print_dev('Printing message: {0}'.format(message.text))
+            #print_dev('Printing message: {0}'.format(message.text))
             # If the buffer is full, remove the first line to make room for the new one
             if len(self.messages) == self.max_messages:
                 del self.messages[0]

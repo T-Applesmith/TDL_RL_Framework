@@ -1,5 +1,6 @@
 from game_messages import Message
 
+from components.target_entity import Target_Entity
 
 class Fighter:
     def __init__(self, hp, defense, power, xp=0, targets=[]):
@@ -89,7 +90,9 @@ class Fighter:
         xp = json_data.get('xp')
         targets_data = json_data.get('targets')
 
-        fighter = Fighter(max_hp, defense, power, xp)
+        targets = [Target_Entity.from_json(target) for target in targets_data]
+
+        fighter = Fighter(max_hp, defense, power, xp, targets)
         fighter.hp = hp
 
         return fighter

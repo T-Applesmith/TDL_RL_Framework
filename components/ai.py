@@ -17,14 +17,14 @@ class BasicMonster:
             target_in_targets = False
             for monster_target in monster.fighter.targets:
                 if entities.index(target) == monster_target.entity_index:
-                    #print('   Updating target location')
+                    #print('   Updating target location for {0}'.format(monster))
                     monster_target.update_location(target.x, target.y)
                     target_in_targets = True
                     break
 
             # otherwise update location
             if not target_in_targets:
-                #print('   Adding new target')
+                #print('   Adding new target for {0}'.format(monster))
                 target_entity = Target_Entity(entities.index(target), target.x, target.y)
                 monster.fighter.targets.append(target_entity)
 

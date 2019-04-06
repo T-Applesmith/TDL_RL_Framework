@@ -45,6 +45,9 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
             game_map.compute_fov(player.x, player.y, fov=constants['fov_algorithm'], radius=constants['fov_radius'],
                                  light_walls=constants['fov_light_walls'])
 
+        user_input = None
+        user_mouse_input = None
+
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
                    mouse_coordinates, game_state, constants, config, dev_console_input)
         tdl.flush()
