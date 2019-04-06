@@ -251,15 +251,13 @@ def help_screen(root_console, header, menu_width, menu_height, screen_width, scr
     window.draw_rect(0, 0, menu_width, menu_height, None, fg=(255, 255, 255), bg=None)
 
     help_screen_array = ['{0}'.format(header),\
-                         'Press keys in [] or in () to select that option within menus.',\
-                         'Press [Esc] to pause the game and access other menus,',\
-                         '   or to quickly exit menus.',\
-                         'The Keybindings Menu shows available actions during gameplay.',\
-                         '   (It will be cleaned up in the future)',\
+                         'Press keys in [] or in () to select that option within menus',\
+                         'Press [Esc] to pause the game and access other menus, or to quickly exit menus',\
+                         'The Keybindings Menu shows available actions during gameplay. (It will be cleaned up in the future)',\
                          '   move {1, 0} means move right one and up zero.',\
-                         'Walk into enimies to attack with your weapon.'] 
+                         'Walk into enemies to attack with your weapon.'] 
                          
-    menu_text(window, 0, 1, menu_width, menu_height, help_screen_array)
+    menu_text(window, 0, 1, menu_width, menu_height, help_screen_array, truncation=False, justification='Left', tab_when_wrapped=True)
 
     x = screen_width // 2 - menu_width // 2
     y = screen_height // 2 - menu_height // 2
@@ -310,28 +308,85 @@ def menu_text(window, x, y, menu_width, menu_height, text_array, truncation=True
                         if justification == 'Left':
                             window.draw_str(x, y, text, bg=None)
                         if justification == 'Center':
-                            while text.len() <= menu_width:
+                            while len(text) <= menu_width - 1:
                                 text = ' '+text
-                                if text.len() <= menu_width:
+                                if len(text) <= menu_width:
                                     text = text+' '
                             window.draw_str(x, y, text, bg=None)
                         if justification == 'Right':
-                            while text.len() <= menu_width:
+                            while len(text) <= menu_width - 1:
                                 text = ' '+text
                             window.draw_str(x, y, text, bg=None)
                         
                     except tdl.TDLError as err:
                         # this is the bit that truncates
-                        print("tdl.TDLError: {0}: {1}".format(err, text))
+                        #print("tdl.TDLError: {0}: {1}".format(err, text))
                         loop_str_print_exception = True
                         text_len = len(text)
                         text = text[:text_len-1]
                         pass
             else:
                 # if text is too long, wrap it
+                first_fragment = True
+                
                 if tab_when_wrapped:
-                    pass
-                pass
+                    # wrapping with tabs for easy reading
+                    # currently doesnt break on words
+
+                    while (len(text) > menu_width or (not first_fragment and len(text) > (menu_width - 3)))\
+                          and y < menu_height:
+                        
+                        if first_fragment:
+                            text_fragment = ''
+                        else:
+                            text_fragment = '   '
+                        
+                        while len(text_fragment) < (menu_width) and y < menu_height:
+                            text_fragment = text_fragment + text[0]
+                            #print('{0}'.format(text_fragment))
+
+                            text = text[1:]
+                            first_fragment = False
+                            
+                        window.draw_str(x, y, text_fragment, bg=None)
+                        y+=1
+                            
+                else:
+                    # standard wrapping
+                    # currently doesn't break on words
+                    while len(text) > (menu_width) and y < menu_height:
+                        text_fragment = ''
+                        while len(text_fragment) < (menu_width) and y < menu_height:
+                            text_fragment = text_fragment + text[0]
+                            #text = remove_prefix(text, text_fragment)
+                            text = text[1:]
+                            #print('FRAGMENT:{0}; TEXT:{1}'.format(text_fragment, text))
+                            
+                        window.draw_str(x, y, text_fragment, bg=None)
+                        y+=1
+
+                if y < menu_height:
+                    # print remaining line
+                    if justification == 'Left':
+                        if tab_when_wrapped and not first_fragment:
+                            window.draw_str(x, y, '   '+text, bg=None)
+                        else:
+                            window.draw_str(x, y, text, bg=None)
+                    elif justification == 'Center':
+                        while len(text) <= menu_width - 1:
+                            text = ' '+text
+                            if len(text) <= menu_width:
+                                text = text+' '
+                        window.draw_str(x, y, text, bg=None)
+                    elif justification == 'Right':
+                        while len(text) <= menu_width - 1:
+                            text = ' '+text
+                        window.draw_str(x, y, text, bg=None)
             
             #window.draw_str(x, y, text)
             y+=1
+
+def remove_prefix(text, prefix):
+    if text.startswith(prefix):
+        return text[len(prefix):]
+    return text
