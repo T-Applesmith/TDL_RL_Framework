@@ -42,7 +42,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
 
     while not tdl.event.is_window_closed():
         if fov_recompute:
-            game_map.compute_fov(player.x, player.y, fov=constants['fov_algorithm'], radius=constants['fov_radius'],
+            game_map.compute_fov(player.x, player.y, fov=constants['fov_algorithm'], radius=player.fighter.fov_range,
                                  light_walls=constants['fov_light_walls'])
 
         user_input = None

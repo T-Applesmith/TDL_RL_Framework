@@ -9,6 +9,7 @@ from components.fighter import Fighter
 from components.item import Item
 from components.stairs import Stairs
 
+from utils.geometry_utils import Rect
 from utils.random_utils import from_dungeon_level, random_choice_from_dict
 
 from entity import Entity
@@ -103,24 +104,6 @@ class Previous_Game_Map:
 
         previous_game_map = Previous_Game_Map(game_map, entities)
         return previous_game_map
-        
-
-class Rect:
-    def __init__(self, x, y, w, h):
-        self.x1 = x
-        self.y1 = y
-        self.x2 = x + w
-        self.y2 = y + h
-
-    def center(self):
-        center_x = int((self.x1 + self.x2) / 2)
-        center_y = int((self.y1 + self.y2) / 2)
-        return (center_x, center_y)
-
-    def intersect(self, other):
-        # returns true if this rectangle intersects with another one
-        return (self.x1 <= other.x2 and self.x2 >= other.x1 and
-                self.y1 <= other.y2 and self.y2 >= other.y1)
 
 
 def create_room(game_map, room):
@@ -174,14 +157,14 @@ def place_entities(room, entities, dungeon_level, colors):
             monster_choice = random_choice_from_dict(monster_chances)
 
             if monster_choice == 'orc':
-                fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, targets=[])
+                fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, fov_range=10, targets=[])
                 ai_component = BasicMonster()
 
                 monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True,
                                  render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component,\
                                  description="A fearsome orc")
             else:
-                fighter_component = Fighter(hp=30, defense=2, power=8, xp=100, targets=[])
+                fighter_component = Fighter(hp=30, defense=2, power=8, xp=100, fov_range=10, targets=[])
                 ai_component = BasicMonster()
 
                 monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True,

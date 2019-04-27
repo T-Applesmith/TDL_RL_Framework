@@ -3,12 +3,13 @@ from game_messages import Message
 from components.target_entity import Target_Entity
 
 class Fighter:
-    def __init__(self, hp, defense, power, xp=0, targets=[]):
+    def __init__(self, hp, defense, power, xp=0, fov_range=0, targets=[]):
         self.base_max_hp = hp
         self.hp = hp
         self.base_defense = defense
         self.base_power = power
         self.xp = xp
+        self.fov_range = fov_range
         self.targets = targets
 
     @property
@@ -76,6 +77,7 @@ class Fighter:
             'defense': self.base_defense,
             'power': self.base_power,
             'xp': self.xp,
+            'fov_range': self.fov_range,
             'targets': [target.to_json() for target in self.targets]
         }
 
@@ -88,11 +90,12 @@ class Fighter:
         defense = json_data.get('defense')
         power = json_data.get('power')
         xp = json_data.get('xp')
+        fov_range = json_data.get('fov_range')
         targets_data = json_data.get('targets')
 
         targets = [Target_Entity.from_json(target) for target in targets_data]
 
-        fighter = Fighter(max_hp, defense, power, xp, targets)
+        fighter = Fighter(max_hp, defense, power, xp, fov_range, targets)
         fighter.hp = hp
 
         return fighter
