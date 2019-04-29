@@ -68,7 +68,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
 
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates,
-               game_state, constants, config, dev_console_input):
+               game_state, constants, config, dev_console_input, targeting_structure):
     screen_width = constants['screen_width']
     screen_height = constants['screen_height']
     bar_width = constants['bar_width']
@@ -93,6 +93,16 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
                     con.draw_char(x, y, None, fg=None, bg=colors.get('dark_wall'))
                 else:
                     con.draw_char(x, y, None, fg=None, bg=colors.get('dark_ground'))
+    
+    if game_state == GameStates.TARGETING:
+        #print('tiles:{0}'.format(targeting_structure.tiles))
+        for x, y in game_map:
+            if game_state == GameStates.TARGETING:# and targeting_structure:
+                #print('({0},{1}), tiles:{2}'.format(x, y, targeting_structure.tiles))
+                #if (x, y) in targeting_structure.tiles:
+                if targeting_structure.h == x and targeting_structure.k == y:
+                    #print('(x,y) in targeting_structure.tiles')
+                    con.draw_char(x, y, None, fg=None, bg=colors.get('dark_red'))
 
     # Draw all entities in the list
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)

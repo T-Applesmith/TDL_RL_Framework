@@ -94,24 +94,51 @@ class Cone:
         arc_length - distance from side to side along curve
         angle - angle from destination to edge of arc
         '''
+        self.update(h, k, x, y, arc_length)
+
+    #@classmethod
+    def update(self, h=None, k=None, x=None, y=None, arc_length=None):
+        if h is None:
+            h = self.h
+        if k is None:
+            print('k updated')
+            k = self.k
+        if x is None:
+            print('x updated')
+            x = self.x
+        if y is None:
+            y = self.y
+        if arc_length is None:
+            arc_length = self.arc_length
+
         self.h = h
         self.k = k
         self.x = x
         self.y = y
-        self.radius = distance_to(h, k, x, y)
-        self.slope = self.slope(h, k, x, y)
-        self.arc_length = arc_length
-        self.angle = self.angle(arc_length, self.radius)
 
-    def slope(self, a, b, c, d):
+        print('Cone: {0}'.format(self.__dict__))
+        #print('{0}'.format(self.__dir__()))
+
+        self.radius = distance_to(h, k, x, y)
+        self.slope = self.calc_slope(h, k, x, y)
+        self.arc_length = arc_length
+        self.angle = self.calc_angle(arc_length, self.radius)
+        self.tiles = self.pass_through_tiles(.4)
+            
+        return self
+
+    def calc_slope(self, a, b, c, d):
         if a != c:
             m = (d - b)/(c - a)
         else:
-            m = None
+            m = 99999999
         return m
 
-    def angle(self, arc_length, radius):
-        angle = arc_length/radius
+    def calc_angle(self, arc_length, radius):
+        if radius != 0:
+            angle = arc_length/radius
+        else:
+            angle = 0
         return angle
 
     def pass_through_tiles(self, r):
@@ -128,7 +155,7 @@ class Cone:
         alpha_1, beta_1 = self.radius * math.cos(angle_1) +.5, self.radius * math.sin(angle_1) +.5
         alpha_2, beta_2 = self.radius * math.cos(angle_2) +.5, self.radius * math.sin(angle_2) +.5
 
-        #print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
+        print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
         #print('angle_1:{0} angle_2:{1}'.format(angle_1, angle_2))
 
         y_scan = y_orig - self.radius
@@ -253,9 +280,26 @@ class Cone:
 
 
 class Coordinate:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, h, k):
+        self.h = h
+        self.k = k
+        self.tiles = (h, k)
+
+    def to_json(self):
+        json_data = {
+            'x': self.h,
+            'y': self.k,
+            'tiles': self.tiles
+            }
+        return json_data
+
+    def from_json(json_data):
+        h = json_data.get('h')
+        k = json_data.get('k')
+
+        coords = Coordinate(h, k)
+
+        return coords
 
 
 def distance_to(x1, y1, x2, y2):

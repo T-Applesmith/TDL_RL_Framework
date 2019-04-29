@@ -2,14 +2,20 @@ from equipment_slots import EquipmentSlots
 from utils.geometry_utils import Cone, Line
 
 def main():
+    '''
     #walk_straight()
 
     
     #line = Line(0,0, 5, 1)
     #print('Line:({0},{1}),({2},{3}),m={4}'.format(line.x1,line.y1,line.x2,line.y2,line.m))
     #tiles = line.pass_through_tiles(.4)
+    '''
 
-    cone = Cone(1, 1, 5, 0, .7854*4)
+    cone = Cone(1, 1, 1, 1, .7854*4)
+    tiles = cone.pass_through_tiles(.4)
+    print('tiles: {0}'.format(tiles))
+
+    cone = cone.update(h=3,x=3)
     tiles = cone.pass_through_tiles(.4)
     print('tiles: {0}'.format(tiles))
 

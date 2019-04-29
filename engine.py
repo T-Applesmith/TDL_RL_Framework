@@ -12,6 +12,7 @@ from loader_functions.json_loaders import load_game, save_game
 from loader_functions.config_loaders import write_config, read_config
 
 from utils.map_utils import next_floor, previous_floor
+from utils.geometry_utils import Coordinate
 
 from death_functions import kill_monster, kill_player
 from dev.dev_console import dev_powers
@@ -38,6 +39,8 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
 
     targeting_item = None
     target_reticle_index = None
+    targeting_structure = None
+    
     dev_console_input = ''
 
     while not tdl.event.is_window_closed():
@@ -49,7 +52,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
         user_mouse_input = None
 
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
-                   mouse_coordinates, game_state, constants, config, dev_console_input)
+                   mouse_coordinates, game_state, constants, config, dev_console_input, targeting_structure)
         tdl.flush()
 
         clear_all(con, entities)
@@ -164,6 +167,9 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity.x = destination_x
                     entity.y = destination_y
 
+                    targeting_structure = Coordinate(entity.x, entity.y)
+                    fov_recompute = True
+
         elif wait:
             game_state = GameStates.ENEMY_TURN
 
@@ -268,10 +274,14 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 player_turn_results.extend(player.equipment.toggle_equip(equipment_selected))
 
         if game_state == GameStates.TARGETING:
+            #print('targeting structure: {0},{1}'.format(targeting_structure.x, targeting_structure.y))
             if mouse_coordinates_changed and mouse_coordinates[0] < game_map.width and mouse_coordinates[1] < game_map.height:
                 if target_reticle_index and entities[target_reticle_index] and game_map.fov[mouse_coordinates]:
                     entity = entities[target_reticle_index]
                     (entity.x, entity.y) = mouse_coordinates
+                    
+                    targeting_structure = Coordinate(target_reticle.x, target_reticle.y)
+                    fov_recompute = True
 
             if confirm:
                 if target_reticle_index and entities[target_reticle_index]:
@@ -345,6 +355,8 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
         if right_click:
             if game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
+                targeting_structure = None
+                fov_recompute = True
 
             elif game_state == GameStates.ESCAPE_MENU:
                 return_to_game = True
@@ -363,6 +375,8 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 game_state = previous_game_state
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
+                targeting_structure = None
+                fov_recompute = True
             elif game_state == GameStates.DEV_CONSOLE:
                 game_state = GameStates.PLAYERS_TURN
             elif game_state in (GameStates.KEYBINDINGS_MENU, GameStates.OPTIONS_MENU, GameStates.HELP_SCREEN):
@@ -430,7 +444,8 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                         entity = entities[target_reticle_index]
                         entities.remove(entity)
                         target_reticle_index = None
-                    
+                        targeting_structure = None
+                        
                 game_state = GameStates.ENEMY_TURN
 
             if item_dropped:
@@ -466,6 +481,8 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 
                 entities.append(target_reticle)
                 target_reticle_index = entities.index(target_reticle)
+
+                targeting_structure = Coordinate(target_reticle.x, target_reticle.y)
 
                 message_log.add_message(targeting_item.item.targeting_message)
 

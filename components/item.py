@@ -1,12 +1,14 @@
 from game_messages import Message
 
 import item_functions
+import utils.geometry_utils
 
 class Item:
-    def __init__(self, use_function=None, targeting=False, targeting_message=None, **kwargs):
+    def __init__(self, use_function=None, targeting=False, targeting_message=None, targeting_structure=None, **kwargs):
         self.use_function = use_function
         self.targeting = targeting
         self.targeting_message = targeting_message
+        self.targeting_structure = targeting_structure
         self.function_kwargs = kwargs
 
     def to_json(self):
@@ -24,6 +26,7 @@ class Item:
             'use_function': use_function_json,
             'targeting': self.targeting,
             'targeting_message': targeting_message_json,
+            'targeting_structure': targeting_structure.to_json(),
             'function_kwargs': self.function_kwargs
         }
 
@@ -34,6 +37,7 @@ class Item:
         use_function_name = json_data.get('use_function')
         targeting = json_data.get('targeting')
         targeting_message_json = json_data.get('targeting_message')
+        targeting_structure_json = json_data.get('targeting_structure')
         function_kwargs = json_data.get('function_kwargs', {})
 
         if use_function_name:
@@ -45,6 +49,11 @@ class Item:
             targeting_message = Message.from_json(targeting_message_json)
         else:
             targeting_message = None
+
+        if targeting_structure_json:
+            targeting_structure = Coordinate.from_json(targeting_structure_json)
+        else:
+            targeting_structure_json = None
 
         item = Item(use_function, targeting, targeting_message, **function_kwargs)
 
