@@ -167,7 +167,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity.x = destination_x
                     entity.y = destination_y
 
-                    targeting_structure = Cone(player.x, player.y, entity.x, entity.y, 2)
+                    targeting_structure = Cone(player.x, player.y, entity.x, entity.y, angle=.78)
                     fov_recompute = True
 
         elif wait:
@@ -280,7 +280,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity = entities[target_reticle_index]
                     (entity.x, entity.y) = mouse_coordinates
                     
-                    targeting_structure = Cone(player.x, player.y, entity.x, entity.y, 2)
+                    targeting_structure = Cone(player.x, player.y, entity.x, entity.y, angle=.78)
                     fov_recompute = True
 
             if confirm:
@@ -482,7 +482,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 entities.append(target_reticle)
                 target_reticle_index = entities.index(target_reticle)
 
-                targeting_structure = Cone(player.x, player.y, entity.x, entity.y, 2)
+                targeting_structure = Cone(player.x, player.y, target_reticle.x, target_reticle.y, angle=.78)
 
                 message_log.add_message(targeting_item.item.targeting_message)
 

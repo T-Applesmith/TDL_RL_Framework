@@ -22,11 +22,16 @@ class Item:
         else:
             use_function_json = None
 
+        if self.targeting_structure:
+            targeting_structure_json = targeting_structure.to_json()
+        else:
+            targeting_structure_json = None
+
         json_data = {
             'use_function': use_function_json,
             'targeting': self.targeting,
             'targeting_message': targeting_message_json,
-            'targeting_structure': targeting_structure.to_json(),
+            'targeting_structure': targeting_structure_json,
             'function_kwargs': self.function_kwargs
         }
 

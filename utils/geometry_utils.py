@@ -83,7 +83,7 @@ class Line:
         
 
 class Cone:
-    def __init__(self, h, k, x, y, arc_length):
+    def __init__(self, h, k, x, y, arc_length=None, angle=None):
         '''
         NOT PROPERLY DEBUGGED
         
@@ -94,10 +94,19 @@ class Cone:
         arc_length - distance from side to side along curve
         angle - angle from destination to edge of arc
         '''
-        self.update(h, k, x, y, arc_length)
+        if arc_length == None and angle == None:
+            print('ERROR: Cone requires either arc_length or angle')
+        elif angle == None:
+            angle = self.calc_angle(arc_length, distance_to(h, k, x, y))
+            self.angle = angle
+        elif arc_length == None:
+            arc_length == angle * distance_to(h, k, x, y)
+            self.arc_length = arc_length
+        
+        self.update(h, k, x, y, arc_length, angle)
 
     #@classmethod
-    def update(self, h=None, k=None, x=None, y=None, arc_length=None):
+    def update(self, h=None, k=None, x=None, y=None, arc_length=None, angle=None):
         if h is None:
             h = self.h
         if k is None:
@@ -109,14 +118,23 @@ class Cone:
         if y is None:
             y = self.y
         if arc_length is None:
-            arc_length = self.arc_length
+            if self.arc_length is None:
+                arc_length = 0
+            else:
+                arc_length = self.arc_length
+            
+        if angle is None:
+            if self.angle is None:
+                angle = 0
+            else:
+                angle = self.angle
 
         self.h = h
         self.k = k
         self.x = x
         self.y = y
 
-        #print('Cone: {0}'.format(self.__dict__))
+        print('Cone: {0}'.format(self.__dict__))
         #print('{0}'.format(self.__dir__()))
 
         self.radius = distance_to(h, k, x, y)
