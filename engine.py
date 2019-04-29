@@ -12,7 +12,7 @@ from loader_functions.json_loaders import load_game, save_game
 from loader_functions.config_loaders import write_config, read_config
 
 from utils.map_utils import next_floor, previous_floor
-from utils.geometry_utils import Coordinate
+from utils.geometry_utils import Coordinate, Cone
 
 from death_functions import kill_monster, kill_player
 from dev.dev_console import dev_powers
@@ -167,7 +167,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity.x = destination_x
                     entity.y = destination_y
 
-                    targeting_structure = Coordinate(entity.x, entity.y)
+                    targeting_structure = Cone(player.x, player.y, entity.x, entity.y, 2)
                     fov_recompute = True
 
         elif wait:
@@ -280,7 +280,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity = entities[target_reticle_index]
                     (entity.x, entity.y) = mouse_coordinates
                     
-                    targeting_structure = Coordinate(target_reticle.x, target_reticle.y)
+                    targeting_structure = Cone(player.x, player.y, entity.x, entity.y, 2)
                     fov_recompute = True
 
             if confirm:
@@ -482,7 +482,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 entities.append(target_reticle)
                 target_reticle_index = entities.index(target_reticle)
 
-                targeting_structure = Coordinate(target_reticle.x, target_reticle.y)
+                targeting_structure = Cone(player.x, player.y, entity.x, entity.y, 2)
 
                 message_log.add_message(targeting_item.item.targeting_message)
 

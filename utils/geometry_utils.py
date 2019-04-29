@@ -116,14 +116,16 @@ class Cone:
         self.x = x
         self.y = y
 
-        print('Cone: {0}'.format(self.__dict__))
+        #print('Cone: {0}'.format(self.__dict__))
         #print('{0}'.format(self.__dir__()))
 
         self.radius = distance_to(h, k, x, y)
         self.slope = self.calc_slope(h, k, x, y)
         self.arc_length = arc_length
         self.angle = self.calc_angle(arc_length, self.radius)
-        self.tiles = self.pass_through_tiles(.4)
+        self.tiles = self.pass_through_tiles(1)
+
+        print('Cone: {0}'.format(self.__dict__))
             
         return self
 
@@ -152,8 +154,8 @@ class Cone:
         angle_1 = math.atan(self.slope) + self.angle
         angle_2 = math.atan(self.slope) - self.angle
 
-        alpha_1, beta_1 = self.radius * math.cos(angle_1) +.5, self.radius * math.sin(angle_1) +.5
-        alpha_2, beta_2 = self.radius * math.cos(angle_2) +.5, self.radius * math.sin(angle_2) +.5
+        alpha_1, beta_1 = self.radius * math.cos(angle_1) +x_orig, self.radius * math.sin(angle_1) +y_orig
+        alpha_2, beta_2 = self.radius * math.cos(angle_2) +x_orig, self.radius * math.sin(angle_2) +y_orig
 
         print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
         #print('angle_1:{0} angle_2:{1}'.format(angle_1, angle_2))
@@ -164,10 +166,16 @@ class Cone:
             while x_scan <= x_orig + self.radius:
                 #print('scan:({0},{1})'.format(x_scan, y_scan))
                 #print('  test 1 : {0}'.format(((beta_1 - y_orig)/(alpha_1 - x_orig))))
+
+                if alpha_1 == x_orig:
+                    alpha_1 += .0001
                                
                 #if y_scan <= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
                 if  -.01 <= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig - y_scan:
                     #print('  test 2 : {0}'.format(((beta_2 - y_orig)/(alpha_2 - x_orig))))
+
+                    if alpha_2 == x_orig:
+                        alpha_2 += .0001
                     
                     #if y_scan >= truncate((beta_2 - y_orig)/(alpha_2 - x_orig),5) * (x_scan - x_orig) + y_orig:
                     if .01 >= truncate((beta_2 - y_orig)/(alpha_2 - x_orig),5) * (x_scan - x_orig) + y_orig - y_scan:
