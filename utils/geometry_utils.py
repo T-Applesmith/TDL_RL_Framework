@@ -100,7 +100,7 @@ class Cone:
             angle = self.calc_angle(arc_length, distance_to(h, k, x, y))
             self.angle = angle
         elif arc_length == None:
-            arc_length == angle * distance_to(h, k, x, y)
+            arc_length = angle * distance_to(h, k, x, y)
             self.arc_length = arc_length
         
         self.update(h, k, x, y, arc_length, angle)
