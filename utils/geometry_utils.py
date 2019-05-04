@@ -147,11 +147,20 @@ class Cone:
             
         return self
 
-    def calc_slope(self, a, b, c, d):
-        if a != c:
-            m = (d - b)/(c - a)
+    def calc_slope(self, h, k, x, y):
+        if h != x:
+            #print('y-k: {0}'.format(y-k))
+            m = (y - k)/(x - h)
         else:
             m = 99999999
+        
+        #nudge so edge case of -0 does not exist
+        if y == k:
+            if h > x:
+                m -= .00000001
+            elif h < x:
+                m += .00000001
+        
         return m
 
     def calc_angle(self, arc_length, radius):
@@ -172,9 +181,17 @@ class Cone:
         angle_1 = math.atan(self.slope) + self.angle
         angle_2 = math.atan(self.slope) - self.angle
 
-        alpha_1, beta_1 = self.radius * math.cos(angle_1) +x_orig, self.radius * math.sin(angle_1) +y_orig
-        alpha_2, beta_2 = self.radius * math.cos(angle_2) +x_orig, self.radius * math.sin(angle_2) +y_orig
-
+        # Its messed up HERE
+        alpha_1 = ((self.x - self.h)/abs(self.x - self.h + .00000001)) * self.radius * math.cos(angle_1) +x_orig
+        #beta_1 = ((self.y - self.k)/abs(self.y - self.k + .00000001)) * self.radius * math.sin(angle_1) +y_orig
+        alpha_2 = ((self.x - self.h)/abs(self.x - self.h + .00000001)) * self.radius * math.cos(angle_2) +x_orig
+        #beta_2 = ((self.y - self.k)/abs(self.y - self.k + .00000001)) * self.radius * math.sin(angle_2) +y_orig
+        #'''
+        #alpha_1 = ((self.x - self.h)/(self.x - self.h + .00000001)) * self.radius * math.cos(angle_1) +x_orig
+        beta_1 = ((self.y - self.k)/(self.y - self.k + .00000001)) * self.radius * math.sin(angle_1) +y_orig
+        #alpha_2 = ((self.x - self.h)/(self.x - self.h + .00000001)) * self.radius * math.cos(angle_2) +x_orig
+        beta_2 = ((self.y - self.k)/(self.y - self.k + .00000001)) * self.radius * math.sin(angle_2) +y_orig
+        #'''
         print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
         #print('angle_1:{0} angle_2:{1}'.format(angle_1, angle_2))
 
