@@ -96,10 +96,25 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
     
             if game_state == GameStates.TARGETING:
             #for x, y in game_map:
-                if (x, y) in targeting_structure.tiles:
+                if (x, y) in targeting_structure.tiles:# and game_map.fov[x, y]:
                     color = con.get_char(x, y)[2]
                     color = (color[0]+80, color[1], color[2])
+                    char = None
+                    fg = None
+                    #print('a1:{0} x:{1} b1:{2} y:{3}'.format(targeting_structure.alpha_1, x, targeting_structure.beta_1, y)
+                    
+                    con.draw_char(x, y, char, fg=fg, bg=color)
+
+                #Identify Edges
+                if False:
+                    color = con.get_char(x, y)[2]
+                    if math.floor(targeting_structure.alpha_1) == x and math.floor(targeting_structure.beta_1) == y:
+                        color = (color[0], color[1]+80, color[2]+80)
+                    elif math.floor(targeting_structure.alpha_2) == x and math.floor(targeting_structure.beta_2) == y:
+                        color = (color[0], color[1]+80, color[2]+80)
                     con.draw_char(x, y, None, fg=None, bg=color)
+
+
 
     # Draw all entities in the list
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)

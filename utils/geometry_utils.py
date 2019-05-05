@@ -78,7 +78,7 @@ class Line:
                 y_walk += delta_y
             #print('x_walk:{0};y_walk:{1}'.format(x_walk, y_walk))
 
-        print('Pass_Through_Tiles: {0}:'.format(tiles))
+        print('Line Pass_Through_Tiles: {0}:'.format(tiles))
         return tiles
         
 
@@ -178,148 +178,72 @@ class Cone:
         x_orig, y_orig = self.h +.5, self.k +.5
         x_dest, y_dest = self.x +.5, self.y +.5
 
-        angle_1 = math.atan(self.slope) + self.angle
-        angle_2 = math.atan(self.slope) - self.angle
+        base_slope = math.atan2(self.y-self.k, self.x-self.h)
+        #print('base_slope:{0}'.format(base_slope))
 
-        # Its messed up HERE
-        alpha_1 = ((self.x - self.h)/abs(self.x - self.h + .00000001)) * self.radius * math.cos(angle_1) +x_orig
-        #beta_1 = ((self.y - self.k)/abs(self.y - self.k + .00000001)) * self.radius * math.sin(angle_1) +y_orig
-        alpha_2 = ((self.x - self.h)/abs(self.x - self.h + .00000001)) * self.radius * math.cos(angle_2) +x_orig
-        #beta_2 = ((self.y - self.k)/abs(self.y - self.k + .00000001)) * self.radius * math.sin(angle_2) +y_orig
-        #'''
-        #alpha_1 = ((self.x - self.h)/(self.x - self.h + .00000001)) * self.radius * math.cos(angle_1) +x_orig
-        beta_1 = ((self.y - self.k)/(self.y - self.k + .00000001)) * self.radius * math.sin(angle_1) +y_orig
-        #alpha_2 = ((self.x - self.h)/(self.x - self.h + .00000001)) * self.radius * math.cos(angle_2) +x_orig
-        beta_2 = ((self.y - self.k)/(self.y - self.k + .00000001)) * self.radius * math.sin(angle_2) +y_orig
-        #'''
+        angle_1 = base_slope + self.angle
+        angle_2 = base_slope - self.angle
+        #print('angle1: {0} angle2: {1} difference: {2}'.format(angle_1, angle_2, angle_1-angle_2))
+
+        print('Cos(A1):{0} Sin(A1):{1} Cos(A2):{2} Sin(A2):{3}'.format(self.radius * math.cos(angle_1),self.radius * math.sin(angle_1),self.radius * math.cos(angle_2),self.radius * math.sin(angle_2)))
+        alpha_1 = (self.radius * math.cos(angle_1)) +x_orig
+        beta_1 = (self.radius * math.sin(angle_1)) +y_orig
+        
+        alpha_2 = (self.radius * math.cos(angle_2)) +x_orig
+        beta_2 = (self.radius * math.sin(angle_2)) +y_orig
         print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
-        #print('angle_1:{0} angle_2:{1}'.format(angle_1, angle_2))
+
+        self.alpha_1, self.beta_1 = alpha_1, beta_1
+        self.alpha_2, self.beta_2 = alpha_2, beta_2        
 
         y_scan = y_orig - self.radius
         while y_scan <= y_orig + self.radius:
-            x_scan = y_orig - self.radius
+            #begin scanning across y-Axis
+            x_scan = x_orig - self.radius
             while x_scan <= x_orig + self.radius:
+                #begin scanning across x-Axis
+                Test_1, Test_2, Test_3, Test_4, Test_5 = False, False, False, False, False
+
+                x_floor = math.floor(x_scan)
+                y_floor = math.floor(y_scan)
+                
                 #print('scan:({0},{1})'.format(x_scan, y_scan))
-                #print('  test 1 : {0}'.format(((beta_1 - y_orig)/(alpha_1 - x_orig))))
 
                 if alpha_1 == x_orig:
                     alpha_1 += .0001
-                               
-                #if y_scan <= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
-                if  -.01 <= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig - y_scan:
-                    #print('  test 2 : {0}'.format(((beta_2 - y_orig)/(alpha_2 - x_orig))))
+                if alpha_2 == x_orig:
+                    alpha_2 += .0001
 
-                    if alpha_2 == x_orig:
-                        alpha_2 += .0001
-                    
-                    #if y_scan >= truncate((beta_2 - y_orig)/(alpha_2 - x_orig),5) * (x_scan - x_orig) + y_orig:
-                    if .01 >= truncate((beta_2 - y_orig)/(alpha_2 - x_orig),5) * (x_scan - x_orig) + y_orig - y_scan:
-                        #print('  test 3 : {0}'.format((x_scan - x_orig)**2 + (y_scan - y_orig)**2))
-                        
-                        if self.radius ** 2 >= (x_scan - x_orig)**2 + (y_scan - y_orig)**2:
+                #print('  test 1 : {0}'.format(((beta_1 - y_orig)/(alpha_1 - x_orig))))
 
-                            if (.5 - r <= x_scan % 1 <= .5 + r) and (.5 - r <= y_scan % 1 <= .5 + r):
+                if min(x_orig, x_dest, alpha_1, alpha_2) <= x_scan and max(x_orig, x_dest, alpha_1, alpha_2) >= x_scan: 
+                    Test_1 = True
+                if min(y_orig, y_dest, beta_1, beta_2) <= y_scan and max(y_orig, y_dest, beta_1, beta_2) >= y_scan:
+                    Test_2 = True
+                if self.radius ** 2 >= (x_scan - x_orig)**2 + (y_scan - y_orig)**2:
+                    Test_3 = True
+                if alpha_2 >= x_orig:
+                    if y_scan >= truncate((beta_2 - y_orig)/(alpha_2 - x_orig),5) * (x_scan - x_orig) + y_orig:
+                        Test_4 = True
+                elif alpha_2 < x_orig:
+                    if y_scan < truncate((beta_2 - y_orig)/(alpha_2 - x_orig),5) * (x_scan - x_orig) + y_orig:
+                        Test_4 = True
+                if alpha_1 >= x_orig:
+                    if y_scan < truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
+                        Test_5 = True
+                elif alpha_1 < x_orig:
+                    if y_scan >= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
+                        Test_5 = True
 
-                                width_style = 'middle'
-                                if width_style == 'thin':
-                                    if x_scan > 0:
-                                        x_floor = math.floor(x_scan)
-                                    else:
-                                        x_floor = math.ceil(x_scan)
-                                    if y_scan > 0:
-                                        y_floor = math.floor(y_scan)
-                                    else:
-                                        y_floor = math.ceil(y_scan)
-                                    
-                                elif width_style == 'middle':
-                                    #print('{0}'.format(x_scan % 1))
-                                    if False:#(x_scan % 1 >.5 ):#and x_scan > 0) or (x_scan % 1 < .5 and x_scan < 0):
-                                        x_floor = math.ceil(x_scan)
-                                    else:
-                                        x_floor = math.floor(x_scan)
-                                    #print('{0}'.format(y_scan % 1))
-                                    if False:#(y_scan % 1 >.5 ):#and y_scan > 0) or (y_scan % 1 < .5 and y_scan < 0):
-                                        y_floor = math.ceil(y_scan)
-                                    else:
-                                        y_floor = math.floor(y_scan)
-                                    
-                                else: #thick
-                                    x_floor, y_floor = math.floor(x_scan), math.floor(y_scan)
-
-                                #print('  passed')
-                                if (not (x_floor, y_floor) in tiles):
-                                    tiles.append((x_floor, y_floor))
-                                    #print('  ({0},{1})'.format(x_floor, y_floor))
-                                #print(' passed 3, tiles:{0}'.format(tiles))
+                if Test_3 and Test_4 and Test_3 and Test_4 and Test_5:
+                    if (not (x_floor, y_floor) in tiles):
+                        tiles.append((x_floor, y_floor))
 
                 x_scan += .25
             #print('exit x_scan')
             y_scan += .25
                 
-        return tiles
-        
-        # sacrifice this code to the Old Ones
-'''
-        # setup lines to walk along
-        radius = distance_to(self.h, self.k, self.x, self.y)
-        m = self.slope(self.h, self.k, self.x, self.y)
-        print('X_Dest:{0}; Y_Dest:{1}; M:{2}; R:{3}'.format(x_dest, y_dest, m, radius))
-
-        while (i >= 0):            
-            # walk along lines
-            x_walk, y_walk = self.h +.5, self.k +.5
-
-            #while abs(x_walk) < abs(x_dest) or abs(y_walk) < abs(y_dest):
-            while abs(x_walk - x_dest) > .1*r and abs(y_walk - y_dest) > .1*r:
-                x_floor, y_floor = math.floor(x_walk), math.floor(y_walk)
-                
-                if (not (x_floor, y_floor) in tiles) and distance_to(x_floor+.5, y_floor+.5, x_walk, y_walk) < r:
-                    tiles.append((x_floor, y_floor))
-            
-                if m == None:
-                    y_walk += 1
-                    print('Slope: Infinite')
-                elif m == 0:
-                    x_walk += 1
-                    print('Slope: Zero')
-                else:
-                    # just checking
-                    m = self.slope(self.h+.5, self.k+.5, x_dest, y_dest)
-                    #
-                    delta_x = math.sqrt(.01/(m**2 + 1))
-                    delta_y = m * delta_x
-                    x_walk += delta_x
-                    y_walk += delta_y
-                print('dx:{2};dy:{3};x_walk:{0};y_walk:{1}'.format(x_walk, y_walk, delta_x, delta_y))
-
-
-            # find next point to walk towards
-            print('X_Dest:{0}; Y_Dest:{1}; M:{2}; R:{3}'.format(x_dest, y_dest, m, distance_to(self.h, self.k, x_dest, y_dest)))
-            if m != None and m != 0:
-                # Calculate the points of a triangle given right angle, two points, and two lengths
-                alpha = x_dest + math.sqrt(l**2 / (1 + m**-2))
-                beta = y_dest - (alpha - x_dest)/m
-            elif m == 0:
-                pass
-            elif m == None:
-                pass
-            x_dest = alpha
-            y_dest = beta
-            m = self.slope(self.h, self.k, x_dest, y_dest)
-            print('Alpha:{0}; Beta:{1}; M:{2}'.format(x_dest, y_dest, m))
-
-            #Choose point to be w/in range!
-            x_dest = self.h + math.sqrt(radius**2 / (1 + m**2))
-            y_dest = self.k - m*(self.h - x_dest)
-            m = self.slope(self.h, self.k, x_dest, y_dest)
-            print('X_Dest:{0}; Y_Dest:{1}; M:{2}; R:{3}'.format(x_dest, y_dest, m, distance_to(self.h, self.k, x_dest, y_dest)))
-            
-            i -= 1
-            print('I:{0};                               Pass_Through_Tiles: {1}'.format(i, tiles))
-
-        print('Pass_Through_Tiles: {0}:'.format(tiles))
-        return tiles
-'''        
+        return tiles  
 
 
 class Coordinate:
