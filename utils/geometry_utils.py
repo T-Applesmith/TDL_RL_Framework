@@ -240,10 +240,10 @@ class Cone:
                     if y_scan >= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
                         Test_5 = True
 
-                if Test_3 and Test_4 and Test_5:
+                if Test_3 and Test_4 and Test_5 and (x_floor != self.h or y_floor != self.k):
+                    #print('container_size:{0} x_contain:{1} y_contain:{2}'.format(2 * math.ceil(self.radius), x_container, y_container))
                     tile_container[x_container][y_container] += 1
 
-                    #print('container_size:{0} x_contain:{1} y_contain:{2}'.format(2 * math.ceil(self.radius), x_container, y_container))
                     if (not (x_floor, y_floor) in tiles) and tile_container[x_container][y_container] >= r:
                         #print('container_size:{0} x_contain:{1} y_contain:{2}'.format(2 * math.ceil(self.radius), x_container, y_container))
                         tiles.append((x_floor, y_floor))
