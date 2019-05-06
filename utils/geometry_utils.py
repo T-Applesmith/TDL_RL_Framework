@@ -172,7 +172,7 @@ class Cone:
 
     def pass_through_tiles(self, r):
         '''
-        r - distance from center to be considered within tile
+        r - number of hits to bet considered within a tile
         '''
         tiles = []
         x_orig, y_orig = self.h +.5, self.k +.5
@@ -185,27 +185,32 @@ class Cone:
         angle_2 = base_slope - self.angle
         #print('angle1: {0} angle2: {1} difference: {2}'.format(angle_1, angle_2, angle_1-angle_2))
 
-        print('Cos(A1):{0} Sin(A1):{1} Cos(A2):{2} Sin(A2):{3}'.format(self.radius * math.cos(angle_1),self.radius * math.sin(angle_1),self.radius * math.cos(angle_2),self.radius * math.sin(angle_2)))
+        #print('Cos(A1):{0} Sin(A1):{1} Cos(A2):{2} Sin(A2):{3}'.format(self.radius * math.cos(angle_1),self.radius * math.sin(angle_1),self.radius * math.cos(angle_2),self.radius * math.sin(angle_2)))      
         alpha_1 = (self.radius * math.cos(angle_1)) +x_orig
         beta_1 = (self.radius * math.sin(angle_1)) +y_orig
         
         alpha_2 = (self.radius * math.cos(angle_2)) +x_orig
         beta_2 = (self.radius * math.sin(angle_2)) +y_orig
-        print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
+        #print('orig:({0},{1}) dest:({2},{3}) ab_1:({4},{5}) ab_2:({6},{7})'.format(x_orig,y_orig,x_dest,y_dest,alpha_1,beta_1,alpha_2,beta_2))
 
         self.alpha_1, self.beta_1 = alpha_1, beta_1
         self.alpha_2, self.beta_2 = alpha_2, beta_2        
 
-        y_scan = y_orig - self.radius
+        tile_container = [[0 for x in range(2 * math.ceil(self.radius))] for y in range(2 * math.ceil(self.radius))]
+        y_scan = min(y_orig, y_dest, beta_1, beta_2)#self.radius
         while y_scan <= y_orig + self.radius:
             #begin scanning across y-Axis
-            x_scan = x_orig - self.radius
+            x_scan = min(x_orig, x_dest, alpha_1, alpha_2)#self.radius
             while x_scan <= x_orig + self.radius:
                 #begin scanning across x-Axis
                 Test_1, Test_2, Test_3, Test_4, Test_5 = False, False, False, False, False
 
                 x_floor = math.floor(x_scan)
                 y_floor = math.floor(y_scan)
+
+                #print('{0} {1} {2} {3}'.format(self.h, x_scan, x_floor, self.radius))
+                x_container = self.h - x_floor
+                y_container = self.k - y_floor
                 
                 #print('scan:({0},{1})'.format(x_scan, y_scan))
 
@@ -235,8 +240,12 @@ class Cone:
                     if y_scan >= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
                         Test_5 = True
 
-                if Test_3 and Test_4 and Test_3 and Test_4 and Test_5:
-                    if (not (x_floor, y_floor) in tiles):
+                if Test_3 and Test_4 and Test_5:
+                    tile_container[x_container][y_container] += 1
+
+                    #print('container_size:{0} x_contain:{1} y_contain:{2}'.format(2 * math.ceil(self.radius), x_container, y_container))
+                    if (not (x_floor, y_floor) in tiles) and tile_container[x_container][y_container] >= r:
+                        #print('container_size:{0} x_contain:{1} y_contain:{2}'.format(2 * math.ceil(self.radius), x_container, y_container))
                         tiles.append((x_floor, y_floor))
 
                 x_scan += .25
