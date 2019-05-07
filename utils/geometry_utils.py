@@ -40,7 +40,7 @@ class Line:
             self.y2 = None
         else:
             raise Exception('Line.__init__: Invalid Line input params')
-        #self.pass_through_tiles = self.pass_through_tiles()
+        self.tiles = self.pass_through_tiles()
 
     def slope(self):
         if self.x1 != self.x2:
@@ -197,10 +197,18 @@ class Cone:
         self.alpha_2, self.beta_2 = alpha_2, beta_2        
 
         tile_container = [[0 for x in range(2 * math.ceil(self.radius))] for y in range(2 * math.ceil(self.radius))]
-        y_scan = min(y_orig, y_dest, beta_1, beta_2)#self.radius
+        if self.angle < 1.5708:
+            y_scan = min(y_orig, y_dest, beta_1, beta_2)
+        else:
+            y_scan = self.k - self.radius
+            
         while y_scan <= y_orig + self.radius:
             #begin scanning across y-Axis
-            x_scan = min(x_orig, x_dest, alpha_1, alpha_2)#self.radius
+            if self.angle < 1.5708:
+                x_scan = min(x_orig, x_dest, alpha_1, alpha_2)
+            else:
+                x_scan = self.h - self.radius
+                
             while x_scan <= x_orig + self.radius:
                 #begin scanning across x-Axis
                 Test_1, Test_2, Test_3, Test_4, Test_5 = False, False, False, False, False
@@ -240,7 +248,8 @@ class Cone:
                     if y_scan >= truncate((beta_1 - y_orig)/(alpha_1 - x_orig),5) * (x_scan - x_orig) + y_orig:
                         Test_5 = True
 
-                if Test_3 and Test_4 and Test_5 and (x_floor != self.h or y_floor != self.k):
+                if Test_3 and ((self.angle < 1.5708 and Test_4 and Test_5) or (self.angle >= 1.5708 and (Test_4 or Test_5)))\
+                   and (x_floor != self.h or y_floor != self.k):
                     #print('container_size:{0} x_contain:{1} y_contain:{2}'.format(2 * math.ceil(self.radius), x_container, y_container))
                     tile_container[x_container][y_container] += 1
 
@@ -259,7 +268,7 @@ class Coordinate:
     def __init__(self, h, k):
         self.h = h
         self.k = k
-        self.tiles = (h, k)
+        self.tiles = [(h, k)]
 
     def to_json(self):
         json_data = {
