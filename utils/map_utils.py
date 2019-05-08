@@ -9,7 +9,8 @@ from components.fighter import Fighter
 from components.item import Item
 from components.stairs import Stairs
 
-from utils.geometry_utils import Rect
+import utils.geometry_utils
+from utils.geometry_utils import Rect, Coordinate, Cone
 from utils.random_utils import from_dungeon_level, random_choice_from_dict
 
 from entity import Entity
@@ -199,9 +200,10 @@ def place_entities(room, entities, dungeon_level, colors):
                 item = Entity(x, y, '#', colors.get('red'), 'Fireball Scroll', render_order=RenderOrder.ITEM,
                               item=item_component, description="A single-use item to damage entities nearby the blast")
             elif item_choice == 'confusion_scroll':
-                item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message(
-                    'Left-click an enemy to confuse it, or right-click to cancel.', colors.get('light_cyan')))
-                item = Entity(x, y, '#', colors.get('light_pink'), 'Confusion Scroll', render_order=RenderOrder.ITEM,
+                item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message(\
+                    'Left-click an enemy to confuse it, or right-click to cancel.', colors.get('light_cyan')),\
+                                      targeting_structure=Coordinate(0,0))
+                item = Entity(x, y, '#', colors.get('light_pink'), 'Confusion Scroll', render_order=RenderOrder.ITEM,\
                               item=item_component, description="A single-use item that causes an entity to be confused")
             else:
                 item_component = Item(use_function=cast_lightning, damage=20, maximum_range=5)

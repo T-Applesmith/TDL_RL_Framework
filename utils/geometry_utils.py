@@ -39,8 +39,40 @@ class Line:
             self.x2 = None
             self.y2 = None
         else:
-            raise Exception('Line.__init__: Invalid Line input params')
+            raise Exception('Line.__init__(): Invalid Line input params')
         self.tiles = self.pass_through_tiles()
+
+    def update(self, x1=None, y1=None, x2=None, y2=None, m=None, l=None):
+        if (m == None or self.m == None) and (l == None or self.l == None):
+            if x1 is not None:
+                self.x1 = x1
+            if x2 is not None:
+                self.x2 = x2
+            if y1 is not None:
+                self.y1 = y1
+            if y2 is not None:
+                self.y2 = y2
+
+            self.m = None
+            self.l = None
+        elif (x2 == None and self.x2 == None) and (y2 == None and self.y2 == None):
+            # Not sure if this will ever be used
+            if x1 is not None:
+                self.x1 = x1
+            if y1 is not None:
+                self.y1 = y1
+            if m is not None:
+                self.m = m
+            if l is not None:
+                self.l = l
+
+            self.x2 = None
+            self.y2 = None
+        else:
+            raise Exception('Line.update(): Invalid Line update params')
+        self.tiles = self.pass_through_tiles()
+        
+        return self
 
     def slope(self):
         if self.x1 != self.x2:
@@ -285,6 +317,15 @@ class Coordinate:
         coords = Coordinate(h, k)
 
         return coords
+
+    def update(self, h=None, k=None):
+        if h is not None:
+            self.h = h
+        if k is not None:
+            self.k = k
+        self.tiles = [(self.h, self.k)]
+
+        return self
 
 
 def distance_to(x1, y1, x2, y2):
