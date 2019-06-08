@@ -119,3 +119,13 @@ def get_game_variables(constants):
     game_state = GameStates.PLAYERS_TURN
 
     return player, entities, game_map, message_log, game_state
+
+
+
+def setup_game_vars():
+    game_vars = {}
+    #Debug
+    game_vars['omniscience_local'] = False
+    game_vars['omniscience_global'] = False
+    
+    return game_vars

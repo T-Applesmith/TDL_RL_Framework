@@ -18,7 +18,7 @@ def dev_console(con, root_console, header, content, menu_width, menu_height, scr
     root_console.blit(window, 0, 0, menu_width, menu_height, 0, 0)
 
 
-def dev_powers(string, entities, message_log, constants, config):
+def dev_powers(string, entities, message_log, constants, config, game_vars):
     '''
     This translates a 'string' provided by the dev_console into an action
 
@@ -63,6 +63,44 @@ def dev_powers(string, entities, message_log, constants, config):
                 print_dev('DEV: {0} has teleported to [{1},{2}].'.format(entity.name, target_x2, target_y2), config)
                 message_log.add_message(Message('DEV: {0} has teleported to [{1},{2}].'.format(entity.name, target_x2, target_y2), constants['colors'].get('white')))
                 results = []
+
+    elif function.lower() in ['omniscient', 'omniscience'] and len(args) > 1:
+        #View things out of sight
+        if args[1].lower() in ['local']:
+            game_vars['omniscience_local'] = not game_vars['omniscience_local']
+        elif args[1].lower() in ['global']:
+            game_vars['omniscience_global'] = not game_vars['omniscience_global']
+
+        print_dev('DEV: toggled omniscience; local:{0} global:{1}'.format(game_vars['omniscience_local'], game_vars['omniscience_global']))
+        message_log.add_message(Message('DEV: Your awareness of the world suddenly shifts.'))
+        results = []
+
+    elif function.lower() in ['spawn'] and len(args) > 3:
+        from components.ai import BasicMonster
+        from components.fighter import Fighter
+        from components.item import Item
+        from entity import Entity
+        from render_functions import RenderOrder
+        from item_functions import cast_fireball
+        
+        #create an object at a given location
+        if args[1] == 'orc':
+            fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, fov_range=10, targets=[])
+            ai_component = BasicMonster()
+
+            monster = Entity(int(args[2]), int(args[3]), 'o', colors.get('desaturated_green'), 'Orc', blocks=True,
+                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component,\
+                                 description="A fearsome orc")
+            entities.append(monster)
+
+        elif args[1] == 'scroll_fireball':
+            item_component = Item(use_function=cast_fireball, targeting=True, targeting_structure=None,\
+                                  targeting_message=Message('Left-click a target tile for the fireball, or right-click to cancel.', colors.get('light_cyan')),\
+                                  damage=25, radius=3)
+            item = Entity(int(args[2]), int(args[3]), '#', colors.get('red'), 'Fireball Scroll', render_order=RenderOrder.ITEM,
+                              item=item_component, description="A single-use item to damage entities nearby the blast")
+            entities.append(item)
+        
 
     return results                    
 

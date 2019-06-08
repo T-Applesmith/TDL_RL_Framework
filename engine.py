@@ -7,7 +7,7 @@ import tdl
 from tcod import image_load, console
 #https://python-tcod.readthedocs.io/en/latest/tcod.html
 
-from loader_functions.initialize_new_game import get_constants, get_game_variables
+from loader_functions.initialize_new_game import get_constants, get_game_variables, setup_game_vars
 from loader_functions.json_loaders import load_game, save_game
 from loader_functions.config_loaders import write_config, read_config
 
@@ -43,6 +43,8 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
     
     dev_console_input = ''
 
+    game_vars = setup_game_vars()
+
     while not tdl.event.is_window_closed():
         if fov_recompute:
             game_map.compute_fov(player.x, player.y, fov=constants['fov_algorithm'], radius=player.fighter.fov_range,
@@ -52,7 +54,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
         user_mouse_input = None
 
         render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log,
-                   mouse_coordinates, game_state, constants, config, dev_console_input, targeting_structure)
+                   mouse_coordinates, game_state, constants, config, game_vars, dev_console_input, targeting_structure)
         tdl.flush()
 
         clear_all(con, entities)
@@ -126,7 +128,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
         elif dev_console_backspace:
             dev_console_input = dev_console_input[:len(dev_console_input)-1]
         elif dev_console_submit:
-            player_turn_results.extend(dev_powers(dev_console_input, entities, message_log, constants, config))
+            player_turn_results.extend(dev_powers(dev_console_input, entities, message_log, constants, config, game_vars))
             dev_console_input = ''
 
         left_click = mouse_action.get('left_click')

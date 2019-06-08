@@ -18,11 +18,12 @@ class RenderOrder(Enum):
     TARGETER = 5
 
 
-def get_names_under_mouse(mouse_coordinates, entities, game_map):
+def get_names_under_mouse(mouse_coordinates, entities, game_map, game_vars):
     x, y = mouse_coordinates
 
     names = [entity.name for entity in entities
-             if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y] and entity.name != 'Target Reticle']
+             if entity.x == x and entity.y == y and (game_map.fov[entity.x, entity.y] or game_vars['omniscience_local'] != False) \
+                                                     and entity.name != 'Target Reticle']
     names = ', '.join(names)
 
     names = '[{0},{1}] {2}'.format(x, y, names)
@@ -68,7 +69,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
 
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, mouse_coordinates,
-               game_state, constants, config, dev_console_input, targeting_structure):
+               game_state, constants, config, game_vars, dev_console_input, targeting_structure):
     screen_width = constants['screen_width']
     screen_height = constants['screen_height']
     bar_width = constants['bar_width']
@@ -88,7 +89,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
                     con.draw_char(x, y, None, fg=None, bg=colors.get('light_ground'))
 
                 game_map.explored[x][y] = True
-            elif game_map.explored[x][y]:
+            elif game_map.explored[x][y] or game_vars['omniscience_local'] != False:
                 if wall:
                     con.draw_char(x, y, None, fg=None, bg=colors.get('dark_wall'))
                 else:
@@ -123,13 +124,13 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
     
     for entity in entities_in_render_order:
         if not entity.visible_time:
-            draw_entity(con, entity, game_map)
+            draw_entity(con, entity, game_map, game_vars)
         elif entity.visible_time == 'blink_slow' and math.floor(current_time) % 2 == 0:
-            draw_entity(con, entity, game_map)
+            draw_entity(con, entity, game_map, game_vars)
         elif entity.visible_time == 'blink_moderate' and current_time - math.floor(current_time) >= .5:
-            draw_entity(con, entity, game_map)
+            draw_entity(con, entity, game_map, game_vars)
         elif entity.visible_time == 'blink_fast' and (2*current_time - math.floor(2*current_time)) >= .5:
-            draw_entity(con, entity, game_map)
+            draw_entity(con, entity, game_map, game_vars)
 
     con.draw_str(1, screen_height - 2, 'HP: {0:02}/{1:02}'.format(player.fighter.hp, player.fighter.max_hp))
 
@@ -150,7 +151,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
     render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp,
                colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
 
-    panel.draw_str(1, 0, get_names_under_mouse(mouse_coordinates, entities, game_map))
+    panel.draw_str(1, 0, get_names_under_mouse(mouse_coordinates, entities, game_map, game_vars))
     panel.draw_str(1, 3, 'Dungeon Level: {0}'.format(game_map.dungeon_level), fg=colors.get('white'), bg=None)
 
     root_console.blit(panel, 0, panel_y, screen_width, panel_height, 0, 0)
@@ -201,8 +202,8 @@ def clear_all(con, entities):
         clear_entity(con, entity)
 
 
-def draw_entity(con, entity, game_map):
-    if game_map.fov[entity.x, entity.y] or (entity.stairs and game_map.explored[entity.x][entity.y]):
+def draw_entity(con, entity, game_map, game_vars):
+    if game_map.fov[entity.x, entity.y] or (entity.stairs and game_map.explored[entity.x][entity.y]) or game_vars['omniscience_local'] != False:
         con.draw_char(entity.x, entity.y, entity.char, entity.color, bg=None)
 
 
