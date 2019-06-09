@@ -169,7 +169,10 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity.x = destination_x
                     entity.y = destination_y
 
-                    targeting_structure = targeting_structure.update(x=destination_x, y=destination_y)
+                    if targeting_structure.struct_name == 'Circle':
+                        targeting_structure = targeting_structure.update(h=destination_x, k=destination_y)
+                    else:
+                        targeting_structure = targeting_structure.update(x=destination_x, y=destination_y)
                     fov_recompute = True
 
         elif wait:
@@ -283,7 +286,10 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     (entity.x, entity.y) = mouse_coordinates
                     
                     #targeting_structure = Cone(player.x, player.y, entity.x, entity.y, angle=2)
-                    targeting_structure = targeting_structure.update(x = entity.x, y = entity.y)
+                    if targeting_structure.struct_name == 'Circle':
+                        targeting_structure = targeting_structure.update(h=destination_x, k=destination_y)
+                    else:
+                        targeting_structure = targeting_structure.update(x = entity.x, y = entity.y)
                     fov_recompute = True
 
             if confirm:
@@ -430,7 +436,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
             if dead_entity:
                 if dead_entity == player:
                     message, game_state = kill_player(dead_entity, constants['colors'])
-                    print('The game doesn\'t hate you, I hate you. My name is Tiberius Applesmith, and this is MY game.')
+                    print('The game doesn\'t hate you, I hate you. My name is T. Applesmith, and this is MY game.')
                 else:
                     message = kill_monster(dead_entity, constants['colors'])
 
@@ -531,7 +537,7 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                         if dead_entity:
                             if dead_entity == player:
                                 message, game_state = kill_player(dead_entity, constants['colors'])
-                                print('The game doesn\'t hate you, I hate you. My name is Tiberius Applesmith, and this is MY game.')
+                                print('The game doesn\'t hate you, I hate you. My name is T. Applesmith, and this is MY game.')
                             else:
                                 message = kill_monster(dead_entity, constants['colors'])
 

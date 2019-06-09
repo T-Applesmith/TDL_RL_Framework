@@ -82,6 +82,11 @@ def dev_powers(string, entities, message_log, constants, config, game_vars):
         from entity import Entity
         from render_functions import RenderOrder
         from item_functions import cast_fireball
+        from utils.geometry_utils import Circle, Cone, Coordinate
+
+        for entity in entities:
+            if entity.name == 'Player':
+                player = entity
         
         #create an object at a given location
         if args[1] == 'orc':
@@ -94,11 +99,12 @@ def dev_powers(string, entities, message_log, constants, config, game_vars):
             entities.append(monster)
 
         elif args[1] == 'scroll_fireball':
-            item_component = Item(use_function=cast_fireball, targeting=True, targeting_structure=None,\
+            item_component = Item(use_function=cast_fireball, targeting=True, targeting_structure=Circle(player.x, player.y, radius=2),\
                                   targeting_message=Message('Left-click a target tile for the fireball, or right-click to cancel.', colors.get('light_cyan')),\
                                   damage=25, radius=3)
             item = Entity(int(args[2]), int(args[3]), '#', colors.get('red'), 'Fireball Scroll', render_order=RenderOrder.ITEM,
                               item=item_component, description="A single-use item to damage entities nearby the blast")
+            print('fireball: {0}'.format(item.item.targeting_structure.tiles))
             entities.append(item)
         
 

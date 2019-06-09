@@ -3,6 +3,7 @@ import math
 
 class Rect:
     def __init__(self, x, y, w, h):
+        self.struct_name = 'Rect'
         self.x1 = x
         self.y1 = y
         self.x2 = x + w
@@ -21,6 +22,7 @@ class Rect:
 
 class Line:
     def __init__(self, x1, y1, x2=None, y2=None, m=None, l=None):
+        self.struct_name = 'Line'
         if m == None and l == None:
             self.x1 = x1
             self.x2 = x2
@@ -126,6 +128,7 @@ class Cone:
         arc_length - distance from side to side along curve
         angle - angle from destination to edge of arc
         '''
+        self.struct_name = 'Cone'
         if arc_length == None and angle == None:
             print('ERROR: Cone requires either arc_length or angle')
         elif angle == None:
@@ -298,6 +301,7 @@ class Cone:
 
 class Coordinate:
     def __init__(self, h, k):
+        self.struct_name = 'Coordinate'
         self.h = h
         self.k = k
         self.tiles = [(h, k)]
@@ -318,15 +322,77 @@ class Coordinate:
 
         return coords
 
-    def update(self, h=None, k=None):
+    def update(self, h=None, k=None, x=None, y=None):
         if h is not None:
             self.h = h
         if k is not None:
             self.k = k
+        if x is not None:
+            self.h = x
+        if y is not None:
+            self.k = y
         self.tiles = [(self.h, self.k)]
 
         return self
 
+
+class Circle:
+    def __init__(self, h, k, x=None, y=None, radius=None):
+        '''        
+        (h,k) - origin points
+        (x,y) - destination points
+        radius - distance from origin to destination
+        '''
+        self.struct_name = 'Circle'
+        self.h, self.k, self.x, self.y, self.radius = None, None, None, None, None
+        self.update(h, k, x, y, radius)
+
+    #@classmethod
+    def update(self, h=None, k=None, x=None, y=None, radius=None):
+        if h is None:
+            h = self.h
+        if k is None:
+            k = self.k
+        if x is None:
+            x = self.x
+        if y is None:
+            y = self.y            
+
+        self.h = h
+        self.k = k
+        self.x = x
+        self.y = y
+
+        if radius is None and self.radius is None:
+            self.radius = distance_to(h, k, x, y)
+        elif radius is not None:
+            self.radius = radius
+        self.tiles = self.pass_through_tiles(1)
+
+        print('Circle: {0}'.format(self.__dict__))
+        return self
+
+    def pass_through_tiles(self, r):
+        '''
+        r : distance from center to be considered within tile
+        '''
+        tiles = []
+        
+        y_scan = self.k +.5-self.radius
+
+        while y_scan <= self.k +.5+self.radius:
+            x_scan = self.h +.5-self.radius
+            while x_scan <= self.h +.5+self.radius:
+                x_floor, y_floor = math.floor(x_scan), math.floor(y_scan)
+                
+                if (not (x_floor, y_floor) in tiles) and distance_to(x_floor+.5, y_floor+.5, x_scan, y_scan) < r:
+                    tiles.append((x_floor, y_floor))
+
+                x_scan += .2
+            y_scan += .2
+        
+        print('Circle Pass_Through_Tiles: {0}:'.format(tiles))
+        return tiles
 
 def distance_to(x1, y1, x2, y2):
     dx = x2 - x1
@@ -336,3 +402,4 @@ def distance_to(x1, y1, x2, y2):
 def truncate(number, digits) -> float:
     stepper = pow(10.0, digits)
     return math.trunc(stepper * number) / stepper
+
