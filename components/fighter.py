@@ -3,7 +3,7 @@ from game_messages import Message
 from components.target_entity import Target_Entity
 
 class Fighter:
-    def __init__(self, hp, defense, power, xp=0, fov_range=0, targets=[]):
+    def __init__(self, hp, defense, power, xp=0, fov_range=0, targets=[], seen_objects=[]):
         self.base_max_hp = hp
         self.hp = hp
         self.base_defense = defense
@@ -11,6 +11,7 @@ class Fighter:
         self.xp = xp
         self.fov_range = fov_range
         self.targets = targets
+        self.seen_objects = seen_objects
 
     @property
     def max_hp(self):
@@ -78,7 +79,8 @@ class Fighter:
             'power': self.base_power,
             'xp': self.xp,
             'fov_range': self.fov_range,
-            'targets': [target.to_json() for target in self.targets]
+            'targets': [target.to_json() for target in self.targets],
+            'seen_objects': [target.to_json() for target in self.seen_objects]
         }
 
         return json_data
@@ -92,10 +94,12 @@ class Fighter:
         xp = json_data.get('xp')
         fov_range = json_data.get('fov_range')
         targets_data = json_data.get('targets')
+        seen_objects_data = json_data.get('seen_objects')
 
         targets = [Target_Entity.from_json(target) for target in targets_data]
+        seen_objects = [Target_Entity.from_json(target) for target in seen_objects_data]
 
-        fighter = Fighter(max_hp, defense, power, xp, fov_range, targets)
+        fighter = Fighter(max_hp, defense, power, xp, fov_range, targets, seen_objects)
         fighter.hp = hp
 
         return fighter

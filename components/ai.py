@@ -1,8 +1,10 @@
 from random import randint
 
 from game_messages import Message
+
 from components.target_entity import Target_Entity
 
+from utils.geometry_utils import distance_to, blocking_between
 
 class BasicMonster:
     def take_turn(self, target, game_map, entities):
@@ -11,7 +13,12 @@ class BasicMonster:
         monster = self.owner
         #print('Fighter: {1}; Targets: {0}'.format([targ.to_json() for targ in monster.fighter.targets], monster.fighter))
 
-        if game_map.fov[monster.x, monster.y]:
+        if monster.fighter.fov_range >= distance_to(monster.x, monster.y, target.x, target.y):
+            zzz_blocking_test = blocking_between(entities, game_map, monster.x, monster.y, target.x, target.y)
+            print('Monster:({0},{1}) Target:({2},{3}) is_blocked:{4}'.format(monster.x, monster.y, target.x, target.y, zzz_blocking_test))
+        if monster.fighter.fov_range >= distance_to(monster.x, monster.y, target.x, target.y) and not \
+           blocking_between(entities, game_map, monster.x, monster.y, target.x, target.y):
+        #if game_map.fov[monster.x, monster.y]:
             #print('Player within FOV')
             # add target to list of targets if not already
             target_in_targets = False
@@ -28,6 +35,13 @@ class BasicMonster:
                 target_entity = Target_Entity(entities.index(target), target.x, target.y)
                 monster.fighter.targets.append(target_entity)
 
+            '''
+            # add object to list of seen objects
+            object_in_seen_objects = False
+            for monster_object in monster.fighter.seen_objects:
+                if entities.index
+            '''
+            
             # move to location
             if monster.distance_to(target) >= 2:
                 monster.move_towards(game_map, entities, target=target)

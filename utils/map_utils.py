@@ -158,14 +158,14 @@ def place_entities(room, entities, dungeon_level, colors):
             monster_choice = random_choice_from_dict(monster_chances)
 
             if monster_choice == 'orc':
-                fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, fov_range=10, targets=[])
+                fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, fov_range=15, targets=[])
                 ai_component = BasicMonster()
 
                 monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True,
                                  render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component,\
                                  description="A fearsome orc")
             else:
-                fighter_component = Fighter(hp=30, defense=2, power=8, xp=100, fov_range=10, targets=[])
+                fighter_component = Fighter(hp=30, defense=2, power=8, xp=100, fov_range=7, targets=[])
                 ai_component = BasicMonster()
 
                 monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True,

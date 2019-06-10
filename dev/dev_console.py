@@ -90,7 +90,7 @@ def dev_powers(string, entities, message_log, constants, config, game_vars):
         
         #create an object at a given location
         if args[1] == 'orc':
-            fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, fov_range=10, targets=[])
+            fighter_component = Fighter(hp=20, defense=0, power=4, xp=35, fov_range=15, targets=[])
             ai_component = BasicMonster()
 
             monster = Entity(int(args[2]), int(args[3]), 'o', colors.get('desaturated_green'), 'Orc', blocks=True,

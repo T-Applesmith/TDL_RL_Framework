@@ -23,7 +23,7 @@ class Item:
             use_function_json = None
 
         if self.targeting_structure:
-            targeting_structure_json = targeting_structure.to_json()
+            targeting_structure_json = self.targeting_structure.to_json()
         else:
             targeting_structure_json = None
 
@@ -56,7 +56,17 @@ class Item:
             targeting_message = None
 
         if targeting_structure_json:
-            targeting_structure = Coordinate.from_json(targeting_structure_json)
+            struct_name = targeting_structure_json.get('struct_name')
+            if struct_name == 'Coordinate':
+                targeting_structure = Coordinate.from_json(targeting_structure_json)
+            elif struct_name == 'Circle':
+                targeting_structure = Circle.from_json(targeting_structure_json)
+            elif struct_name == 'Cone':
+                targeting_structure = Cone.from_json(targeting_structure_json)
+            elif struct_name == 'Line':
+                targeting_structure = Line.from_json(targeting_structure_json)
+            elif struct_name == 'Rect':
+                targeting_structure = Rect.from_json(targeting_structure_json)
         else:
             targeting_structure_json = None
 

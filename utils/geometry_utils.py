@@ -1,5 +1,7 @@
 import math
 
+#from entity import get_blocking_entities_at_location
+
 
 class Rect:
     def __init__(self, x, y, w, h):
@@ -18,6 +20,28 @@ class Rect:
         # returns true if this rectangle intersects with another one
         return (self.x1 <= other.x2 and self.x2 >= other.x1 and
                 self.y1 <= other.y2 and self.y2 >= other.y1)
+
+    def to_json(self):
+        json_data = {
+            'struct_name': self.struct_name,
+            'x1': self.x1,
+            'y1': self.y1,
+            'x2': self.x2,
+            'y2': self.y2
+        }
+
+        return json_data
+
+    def from_json(json_data):
+        struct_name = json_data.get('struct_name')
+        x1 = json_data.get('x1')
+        y1 = json_data.get('y1')
+        x2 = json_data.get('x2')
+        y2 = json_data.get('y2')
+
+        rect = Rect(x1, y1, x2-x1, y2-y1)
+
+        return rect
     
 
 class Line:
@@ -42,7 +66,35 @@ class Line:
             self.y2 = None
         else:
             raise Exception('Line.__init__(): Invalid Line input params')
-        self.tiles = self.pass_through_tiles()
+        self.tiles = self.pass_through_tiles(1)
+
+        return
+
+    def to_json(self):
+        json_data = {
+            'struct_name': self.struct_name,
+            'x1': self.x1,
+            'x2': self.x2,
+            'y1': self.y1,
+            'y2': self.y2,
+            'm': self.m,
+            'l': self.l
+        }
+
+        return json_data
+
+    def from_json(json_data):
+        struct_name = json_data.get('struct_name')
+        x1 = json_data.get('x1')
+        x2 = json_data.get('x2')
+        y1 = json_data.get('y1')
+        y2 = json_data.get('y2')
+        m = json_data.get('m')
+        l = json_data.get('l')
+
+        line = Line(x1, y1, x2, y2, m, l)
+
+        return line
 
     def update(self, x1=None, y1=None, x2=None, y2=None, m=None, l=None):
         if (m == None or self.m == None) and (l == None or self.l == None):
@@ -86,33 +138,99 @@ class Line:
 
     def pass_through_tiles(self, r):
         '''
+        Line
         r : distance from center to be considered within tile
         r = .4 seems decent
         '''
         tiles = []
-        x_walk, y_walk = self.x1 +.5, self.y1 +.5
 
         if not self.m:
             self.slope()
 
-        while x_walk < (self.x2 +.5) and y_walk < (self.y2 +.5):
+        if self.m == None:
+            direction = 'POS'
+            #x_walk, y_walk = self.x2 +.5, self.y2 +.5
+        elif  self.m >= 0:
+            direction = 'POS'
+            #x_walk, y_walk = self.x2 +.5, self.y2 +.5
+        else:
+            direction = 'NEG'
+            #x_walk, y_walk = self.x1 +.5, self.y1 +.5
+
+        #decide where to start
+        if direction == 'POS':
+            if self.x2 > self.x1:
+                x_walk, y_walk = self.x1 +.5, self.y1 +.5
+            elif self.x2 == self.x1:
+                if self.y2 > self.y1:
+                    x_walk, y_walk = self.x1 +.5, self.y1 +.5
+                else:
+                    x_walk, y_walk = self.x2 +.5, self.y2 +.5
+            else:
+                x_walk, y_walk = self.x2 +.5, self.y2 +.5
+        elif direction == 'NEG':
+            if self.x2 > self.x1:
+                x_walk, y_walk = self.x2 +.5, self.y2 +.5
+            elif self.x2 == self.x1:
+                if self.y2 > self.y1:
+                    x_walk, y_walk = self.x2 +.5, self.y2 +.5
+                else:
+                    x_walk, y_walk = self.x1 +.5, self.y1 +.5
+            else:
+                x_walk, y_walk = self.x1 +.5, self.y1 +.5
+
+        #and where to end
+        if x_walk == self.x1+.5 and y_walk == self.y1+.5:
+            destination = 2
+        else:
+            destination = 1
+
+        print('direction:{0} walk:({1},{2}) 1:({3},{4}) 2:({5},{6}) DST:{7}'.format(direction,x_walk,y_walk,self.x1,self.y1,self.x2,self.y2,destination))
+
+        if not ((destination == 1 and (.25 <= abs(x_walk - (self.x1 +.5)) or .25 <= abs(y_walk - (self.y1 +.5)))) or\
+              (destination == 2 and (.25 <= abs(x_walk - (self.x2 +.5)) or .25 <= abs(y_walk - (self.y2 +.5))))):
+            if destination == 1:
+                print('X:{0} Y:{1}'.format(.25 <= abs(x_walk - (self.x1 +.5)), .25 <= abs(y_walk - (self.y1 +.5))))
+            if destination == 2:
+                print('X:{0} Y:{1}'.format(.25 <= abs(x_walk - (self.x2 +.5)), .25 <= abs(y_walk - (self.y2 +.5))))
+        #while x_walk < (self.x2 +.5) and y_walk < (self.y2 +.5):
+        #while x_walk < (self.x2 +.5) and y_walk < (self.y2 +.5):
+        #while (direction == 'POS' and (x_walk < (self.x1 +.5) or y_walk < (self.y1 +.5))) or \
+        #      (direction == 'NEG' and (x_walk > (self.x2 +.5) or y_walk > (self.y2 +.5))):
+        #while (direction == 'POS' and (.25 <= abs(x_walk - (self.x1 +.5)) and .25 <= abs(y_walk - (self.y1 +.5)))) or \
+        #      (direction == 'NEG' and (.25 <= abs(x_walk - (self.x2 +.5)) and .25 <= abs(y_walk - (self.y2 +.5)))):
+        while (destination == 1 and (.25 <= abs(x_walk - (self.x1 +.5)) or .25 <= abs(y_walk - (self.y1 +.5)))) or\
+              (destination == 2 and (.25 <= abs(x_walk - (self.x2 +.5)) or .25 <= abs(y_walk - (self.y2 +.5)))):
             x_floor, y_floor = math.floor(x_walk), math.floor(y_walk)
                 
+            #print('pass_through: ({0},{1}) distance:{2}'.format(x_floor,y_floor,distance_to(x_floor+.5, y_floor+.5, x_walk, y_walk)))
             if (not (x_floor, y_floor) in tiles) and distance_to(x_floor+.5, y_floor+.5, x_walk, y_walk) < r:
                 tiles.append((x_floor, y_floor))
-            
-            if self.m == None:
-                y_walk += 1
-            elif self.m == 0:
-                x_walk += 1
-            else:
-                delta_x = math.sqrt(.01/(self.m**2 + 1))
-                delta_y = self.m * delta_x
-                x_walk += delta_x
-                y_walk += delta_y
+
+            if direction == 'POS':
+                if self.m == None:
+                    y_walk += 1
+                elif self.m == 0:
+                    x_walk += 1
+                else:
+                    delta_x = math.sqrt(.01/(self.m**2 + 1))
+                    delta_y = self.m * delta_x
+                    x_walk += delta_x
+                    y_walk += delta_y
+            elif direction == 'NEG':
+                if self.m == None:
+                    y_walk -= 1
+                elif self.m == 0:
+                    x_walk -= 1
+                else:
+                    delta_x = math.sqrt(.01/(self.m**2 + 1))
+                    delta_y = self.m * delta_x
+                    x_walk -= delta_x
+                    y_walk -= delta_y
+                    
             #print('x_walk:{0};y_walk:{1}'.format(x_walk, y_walk))
 
-        print('Line Pass_Through_Tiles: {0}:'.format(tiles))
+        print('Line Pass_Through_Tiles: {0}'.format(tiles))
         return tiles
         
 
@@ -139,6 +257,33 @@ class Cone:
             self.arc_length = arc_length
         
         self.update(h, k, x, y, arc_length, angle)
+
+    def to_json(self):
+        json_data = {
+            'struct_name': self.struct_name,
+            'h': self.h,
+            'k': self.k,
+            'x': self.x,
+            'y': self.y,
+            'arc_length': self.arc_length,
+            'angle': self.angle
+            }
+
+        return json_data
+
+    def from_json(json_data):
+        struct_name = json_data.get('struct_name')
+        h = json_data.get('h')
+        k = json_data.get('k')
+        x = json_data.get('x')
+        y = json_data.get('y')
+        arc_length = json_data.get('arc_length')
+        angle = json_data.get('angle')
+
+        cone = Cone(h, k, x, y, arc_length, angle)
+
+        return cone
+        
 
     #@classmethod
     def update(self, h=None, k=None, x=None, y=None, arc_length=None, angle=None):
@@ -212,6 +357,7 @@ class Cone:
         tiles = []
         x_orig, y_orig = self.h +.5, self.k +.5
         x_dest, y_dest = self.x +.5, self.y +.5
+        #print('Pass_Through_Tiles: ({0},{1}) ({2},{3})'.format(x_orig,y_orig,x_dest,y_dest))
 
         base_slope = math.atan2(self.y-self.k, self.x-self.h)
         #print('base_slope:{0}'.format(base_slope))
@@ -308,6 +454,7 @@ class Coordinate:
 
     def to_json(self):
         json_data = {
+            'struct_name': self.struct_name,
             'x': self.h,
             'y': self.k,
             'tiles': self.tiles
@@ -346,6 +493,30 @@ class Circle:
         self.struct_name = 'Circle'
         self.h, self.k, self.x, self.y, self.radius = None, None, None, None, None
         self.update(h, k, x, y, radius)
+
+    def to_json(self):
+        json_data = {
+            'struct_name': self.struct_name,
+            'h': self.h,
+            'k': self.k,
+            'x': self.x,
+            'y': self.y,
+            'radius': self.radius
+            }
+
+        return json_data
+
+    def from_json(json_data):
+        struct_name = json_data.get('struct_name')
+        h = json_data.get('h')
+        k = json_data.get('k')
+        x = json_data.get('x')
+        y = json_data.get('y')
+        radius = json_data.get('radius')
+
+        circle = Circle(h, k, x, y, radius)
+
+        return circle
 
     #@classmethod
     def update(self, h=None, k=None, x=None, y=None, radius=None):
@@ -403,3 +574,22 @@ def truncate(number, digits) -> float:
     stepper = pow(10.0, digits)
     return math.trunc(stepper * number) / stepper
 
+def blocking_between(entities, game_map, x1, y1, x2, y2):
+    is_blocking = False
+    line = Line(x1, y1, x2=x2, y2=y2)
+    for coordinate in line.tiles:
+        #print('Coordinate ({0},{1}): transparent:{2} walkable:{3}'.format(coordinate[0], coordinate[1], game_map.transparent[coordinate[0]][coordinate[1]], game_map.walkable[coordinate[0]][coordinate[1]]))
+        #if get_blocking_entities_at_location(entities, coordinate[0], coordinate[1]) != None and not (game_map.transparent[coordinate[0]][coordinate[1]] and game_map.walkable[coordinate[0]][coordinate[1]]):
+        if get_blocking_entities_at_location(entities, coordinate[0], coordinate[1]) != None or not game_map.transparent[coordinate[0]][coordinate[1]]:
+            if not ((coordinate[0] == x1 and coordinate[1] == y1) or (coordinate[0] == x2 and coordinate[1] == y2)): 
+                is_blocking = True
+    if not line.tiles:
+        is_blocking = True
+    return is_blocking
+    
+def get_blocking_entities_at_location(entities, destination_x, destination_y):
+    for entity in entities:
+        if entity.blocks and entity.x == destination_x and entity.y == destination_y:
+            return entity
+
+    return None
