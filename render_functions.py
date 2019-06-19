@@ -95,7 +95,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
                 else:
                     con.draw_char(x, y, None, fg=None, bg=colors.get('dark_ground'))
     
-            if game_state == GameStates.TARGETING:
+            if game_state == GameStates.TARGETING and targeting_structure != None:
             #for x, y in game_map:
                 if (x, y) in targeting_structure.tiles:# and (game_map.fov[x,y] or game_map.transparent[x,y] or game_map.explored[x][y]):
                     color = con.get_char(x, y)[2]

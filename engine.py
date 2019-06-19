@@ -168,11 +168,12 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                 if game_map.fov[destination_x, destination_y]:
                     entity.x = destination_x
                     entity.y = destination_y
-
-                    if targeting_structure.struct_name == 'Circle':
-                        targeting_structure = targeting_structure.update(h=destination_x, k=destination_y)
-                    else:
-                        targeting_structure = targeting_structure.update(x=destination_x, y=destination_y)
+                    
+                    if targeting_structure != None:
+                        if targeting_structure.struct_name == 'Circle':
+                            targeting_structure = targeting_structure.update(h=destination_x, k=destination_y)
+                        else:
+                            targeting_structure = targeting_structure.update(x=destination_x, y=destination_y)
                     fov_recompute = True
 
         elif wait:
@@ -285,11 +286,11 @@ def play_game(player, entities, game_map, previous_game_maps, message_log, game_
                     entity = entities[target_reticle_index]
                     (entity.x, entity.y) = mouse_coordinates
                     
-                    #targeting_structure = Cone(player.x, player.y, entity.x, entity.y, angle=2)
-                    if targeting_structure.struct_name == 'Circle':
-                        targeting_structure = targeting_structure.update(h=destination_x, k=destination_y)
-                    else:
-                        targeting_structure = targeting_structure.update(x = entity.x, y = entity.y)
+                    if targeting_structure != None:
+                        if targeting_structure.struct_name == 'Circle':
+                            targeting_structure = targeting_structure.update(h=destination_x, k=destination_y)
+                        else:
+                            targeting_structure = targeting_structure.update(x = entity.x, y = entity.y)
                     fov_recompute = True
 
             if confirm:

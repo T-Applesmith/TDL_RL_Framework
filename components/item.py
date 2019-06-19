@@ -3,6 +3,8 @@ from game_messages import Message
 import item_functions
 import utils.geometry_utils
 
+from utils.geometry_utils import Circle, Cone, Coordinate, Line, Rect
+
 class Item:
     def __init__(self, use_function=None, targeting=False, targeting_message=None, targeting_structure=None, **kwargs):
         self.use_function = use_function
@@ -67,6 +69,8 @@ class Item:
                 targeting_structure = Line.from_json(targeting_structure_json)
             elif struct_name == 'Rect':
                 targeting_structure = Rect.from_json(targeting_structure_json)
+            else:
+                targeting_structure = Coordinate.from_json(targeting_structure_json)
         else:
             targeting_structure_json = None
 
